@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'AURPackager',
+    'manager',
 ]
 
 MIDDLEWARE_CLASSES = [
