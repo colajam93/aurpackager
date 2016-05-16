@@ -1,7 +1,16 @@
 from django.contrib import admin
-from manager.models import Build, Package
+from manager.models import Package, Build
 
-admin.site.register(Build)
-admin.site.register(Package)
 
-# Register your models here.
+class PackageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'source')
+
+
+admin.site.register(Package, PackageAdmin)
+
+
+class BuildAdmin(admin.ModelAdmin):
+    list_display = ('package', 'version', 'date')
+
+
+admin.site.register(Build, BuildAdmin)
