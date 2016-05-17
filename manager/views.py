@@ -10,5 +10,5 @@ def package_detail(request, package_id):
     return HttpResponse('Package detail')
 
 
-def build_detail(request, build_id):
+def build_detail(request, package_id, build_id):
     return HttpResponse('Build detail')
