@@ -145,3 +145,10 @@ local_settings.py
 db.sqlite3
 media
 
+
+### Bower ###
+bower_components
+.bower-cache
+.bower-registry
+.bower-tmp
+
