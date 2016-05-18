@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Build Detail{% endblock title %}
+
+{% block content %}
+    <h3 class="page-header">Build Detail</h3>
+    Package {{ package.name }}<br>
+    {{ build.version }}<br>
+    {{ build.date }}<br>
+{% endblock content %}

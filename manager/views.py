@@ -1,6 +1,4 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-
 from manager.models import Package, Build
 
 
@@ -18,4 +16,8 @@ def package_detail(request, package_id):
 
 
 def build_detail(request, package_id, build_id):
-    return HttpResponse('Build detail')
+    build = Build.objects.get(id=build_id)
+    if build:
+        return render(request, 'build_detail.html', {'build': build, 'package': build.package})
+    else:
+        return redirect('manager:package_list')
