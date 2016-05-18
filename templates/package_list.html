@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Package List{% endblock title %}
+
+{% block content %}
+    <h3 class="page-header">Package List</h3>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Source</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for package in packages %}
+            <tr>
+                <td><a href="{{ package.id }}">{{ package.id }}</a></td>
+                <td>{{ package.name }}</td>
+                <td>{{ package.source }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}
