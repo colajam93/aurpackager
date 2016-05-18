@@ -15,7 +15,7 @@
         <tbody>
         {% for package in packages %}
             <tr>
-                <td><a href="{{ package.id }}">{{ package.id }}</a></td>
+                <td><a href="{% url 'manager:package_detail' package_id=package.id %}">{{ package.id }}</a></td>
                 <td>{{ package.name }}</td>
                 <td>{{ package.source }}</td>
             </tr>
