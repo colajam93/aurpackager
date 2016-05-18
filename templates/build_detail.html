@@ -4,7 +4,9 @@
 
 {% block content %}
     <h3 class="page-header">Build Detail</h3>
-    Package {{ package.name }}<br>
-    {{ build.version }}<br>
-    {{ build.date }}<br>
+    <a href="{% url 'manager:package_detail' package_id=package.id %}">Back to Package {{ package.name }} Detail</a><br>
+    <a href="{% url 'manager:package_list'%}">Package List</a><br>
+    name: {{ package.name }}<br>
+    version: {{ build.version }}<br>
+    date: {{ build.date }}<br>
 {% endblock content %}
