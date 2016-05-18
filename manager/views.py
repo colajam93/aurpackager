@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
-from manager.models import Package
+from manager.models import Package, Build
 
 
 def package_list(request):
@@ -10,7 +10,11 @@ def package_list(request):
 
 
 def package_detail(request, package_id):
-    return HttpResponse('Package detail')
+    builds = Build.objects.filter(package_id=package_id).order_by('id')
+    if builds:
+        return render(request, 'package_detail.html', {'package_id': package_id, 'builds': builds})
+    else:
+        return redirect('manager:package_list')
 
 
 def build_detail(request, package_id, build_id):

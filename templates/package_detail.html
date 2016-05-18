@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Package Detail{% endblock title %}
+
+{% block content %}
+    <h3 class="page-header">Package Detail</h3>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Version</th>
+            <th>Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for build in builds %}
+            <tr>
+                <td><a href="{% url 'manager:build_detail' package_id=package_id build_id=build.id %}">{{ build.id }}</a></td>
+                <td>{{ build.version }}</td>
+                <td>{{ build.date }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}
