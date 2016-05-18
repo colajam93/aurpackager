@@ -5,7 +5,11 @@
 {% block content %}
     <h3 class="page-header">Package Detail</h3>
 
-    <a href="{% url 'manager:package_list'%}">Package List</a>
+    <a href="{% url 'manager:package_list' %}">Package List</a>
+    <form action="{% url 'manager:package_build' package_id=package_id %}" method="get" class="form-horizontal"
+          role="form">
+        <button type="submit" class="btn btn-primary">Build!</button>
+    </form>
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
@@ -17,7 +21,9 @@
         <tbody>
         {% for build in builds %}
             <tr>
-                <td><a href="{% url 'manager:build_detail' package_id=package_id build_id=build.id %}">{{ build.id }}</a></td>
+                <td>
+                    <a href="{% url 'manager:build_detail' package_id=package_id build_id=build.id %}">{{ build.id }}</a>
+                </td>
                 <td>{{ build.version }}</td>
                 <td>{{ build.date }}</td>
             </tr>

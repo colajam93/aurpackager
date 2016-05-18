@@ -15,6 +15,14 @@ def package_detail(request, package_id):
         return redirect('manager:package_list')
 
 
+def package_build(request, package_id):
+    package = Package.objects.get(id=package_id)
+    if package:
+        return render(request, 'package_build.html', {'package': package})
+    else:
+        return redirect('manager:package_list')
+
+
 def build_detail(request, package_id, build_id):
     build = Build.objects.get(id=build_id)
     if build:
