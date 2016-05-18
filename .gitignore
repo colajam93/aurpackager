@@ -152,3 +152,7 @@ bower_components
 .bower-registry
 .bower-tmp
 
+### external js/css ###
+
+manager/static/js/
+manager/static/css/
