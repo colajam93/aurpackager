@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from manager.models import Package, Build
+from packager.manager import BuilderManager
 
 
 def package_list(request):
@@ -9,15 +10,13 @@ def package_list(request):
 
 def package_detail(request, package_id):
     builds = Build.objects.filter(package_id=package_id).order_by('id')
-    if builds:
-        return render(request, 'package_detail.html', {'package_id': package_id, 'builds': builds})
-    else:
-        return redirect('manager:package_list')
+    return render(request, 'package_detail.html', {'package_id': package_id, 'builds': builds})
 
 
 def package_build(request, package_id):
     package = Package.objects.get(id=package_id)
     if package:
+        BuilderManager().register(package_id)
         return render(request, 'package_build.html', {'package': package})
     else:
         return redirect('manager:package_list')
