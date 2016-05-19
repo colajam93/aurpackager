@@ -1,18 +1,24 @@
-from collections import deque
 from packager.builder import Builder
+import multiprocessing
+import queue
+import time
+from misc.singleton import Singleton
 
 
-class BuilderManager:
-    __instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if BuilderManager.__instance is None:
-            BuilderManager.__instance = object.__new__(cls)
-        return BuilderManager.__instance
-
+class BuilderManager(metaclass=Singleton):
     def __init__(self):
-        self.build_queue = deque()
+        self.build_queue = multiprocessing.Queue()
+        self.build_process = multiprocessing.Process(target=self._builder_main)
+        self.build_process.start()
 
     def register(self, package_id):
-        build = Builder(package_id)
-        self.build_queue.append(build)
+        self.build_queue.put(package_id)
+
+    def _builder_main(self):
+        while True:
+            try:
+                package_id = self.build_queue.get()
+            except queue.Empty:
+                time.sleep(1)
+            else:
+                build = Builder(package_id)
