@@ -28,6 +28,8 @@ class Builder:
         package_name = detail['Name']
         tar_path = os.path.join(build_dir, package_name)
         os.makedirs(build_dir, 0o700)
+        dest_dir = os.path.join(build_dir, '_dest')
+        os.makedirs(dest_dir, 0o700)
         with closing(urlopen(tar_url)) as request:
             with open(tar_path, 'wb') as f:
                 f.write(request.read())
@@ -37,9 +39,14 @@ class Builder:
 cd {build_dir}
 tar xvf {package_name}
 cd {package_name}
+export PKGDEST='{dest}'
 makepkg -s
 '''
         build_script_path = os.path.join(build_dir, '_build_script.sh')
         with open(build_script_path, 'w') as f:
-            f.write(build_script.format(build_dir=build_dir, package_name=package_name))
+            f.write(build_script.format(build_dir=build_dir, package_name=package_name, dest=dest_dir))
         subprocess.run('cd {} && bash _build_script.sh'.format(build_dir), shell=True)
+        dest_list = os.listdir(dest_dir)
+        if not len(dest_list) == 1:
+            raise BuilderError
+        result_path = os.path.join(dest_dir, dest_list[0])
