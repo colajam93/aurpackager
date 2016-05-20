@@ -33,6 +33,8 @@ class Builder:
             result = json.loads(request.read().decode())
 
         # package detail dictionary
+        if not len(result['results']) == 1:
+            raise BuilderError
         detail = result['results'][0]
 
         # get tarball url and package version
@@ -78,6 +80,8 @@ makepkg -s
 
         # write log
         with open(self.log_path, 'w') as f:
+            f.write(json.dumps(result, indent=4))
+            f.write('\n')
             f.write(completed.stdout)
 
         # find result package
