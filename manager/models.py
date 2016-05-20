@@ -13,16 +13,19 @@ class Package(models.Model):
 
 class Build(models.Model):
     package = models.ForeignKey(Package, default='')
-    version = models.CharField(max_length=FIELD_LENGTH)
+    version = models.CharField(max_length=FIELD_LENGTH, default='')
     date = models.DateTimeField()
     result_path = models.CharField(max_length=FIELD_LENGTH, default='')
     log_path = models.CharField(max_length=FIELD_LENGTH, default='')
+    BUILDING = 'BUILDING'
+    SUCCESS = 'SUCCESS'
+    FAILURE = 'FAILURE'
     STATUS_CHOICES = (
-        ('BUILDING', 'Building'),
-        ('SUCCESS', 'Success'),
-        ('FAILURE', 'Failure')
+        (BUILDING, 'Building'),
+        (SUCCESS, 'Success'),
+        (FAILURE, 'Failure')
     )
-    status = models.CharField(max_length=FIELD_LENGTH, choices=STATUS_CHOICES, default=STATUS_CHOICES[0])
+    status = models.CharField(max_length=FIELD_LENGTH, choices=STATUS_CHOICES, default=BUILDING)
 
     def __str__(self):
         return '{} {} {}'.format(self.package, self.version, self.date)
