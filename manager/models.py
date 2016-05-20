@@ -5,7 +5,6 @@ FIELD_LENGTH = 100
 
 class Package(models.Model):
     name = models.CharField(max_length=FIELD_LENGTH)
-    source = models.CharField(max_length=FIELD_LENGTH)
 
     def __str__(self):
         return self.name

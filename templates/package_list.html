@@ -9,7 +9,6 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Source</th>
         </tr>
         </thead>
         <tbody>
@@ -17,7 +16,6 @@
             <tr>
                 <td><a href="{% url 'manager:package_detail' package_id=package.id %}">{{ package.id }}</a></td>
                 <td>{{ package.name }}</td>
-                <td>{{ package.source }}</td>
             </tr>
         {% endfor %}
         </tbody>

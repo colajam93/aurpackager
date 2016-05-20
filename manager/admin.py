@@ -3,7 +3,7 @@ from manager.models import Package, Build
 
 
 class PackageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'source')
+    list_display = ('id', 'name')
 
 
 admin.site.register(Package, PackageAdmin)
