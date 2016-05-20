@@ -5,7 +5,6 @@ from contextlib import closing
 import json
 import os
 import os.path
-import datetime
 import subprocess
 
 AUR_URL = 'https://aur.archlinux.org'
