@@ -1,4 +1,4 @@
-from packager.builder import Builder
+from packager.builder import Builder, BuilderError
 import threading
 import queue
 import time
@@ -30,17 +30,15 @@ class BuilderManager(metaclass=Singleton):
             build = Build(package=builder.package, status=Build.BUILDING, date=date)
             build.save()
             try:
-                result_path, log_path, version = builder.build(date)
-            except:
+                builder.build(date)
+            except BuilderError:
                 build.status = Build.FAILURE
-                raise
             else:
-                build.version = version
-                build.date = date
-                build.result_path = result_path
-                build.log_path = log_path
                 build.status = Build.SUCCESS
-            build.save(force_update=True)
+            build.version = builder.version
+            build.result_path = builder.result_path
+            build.log_path = builder.log_path
+            build.save()
             with self.lock:
                 self.building_packages.remove(builder.package_name)
 
