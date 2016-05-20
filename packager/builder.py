@@ -45,8 +45,15 @@ makepkg -s
         build_script_path = os.path.join(build_dir, '_build_script.sh')
         with open(build_script_path, 'w') as f:
             f.write(build_script.format(build_dir=build_dir, package_name=package_name, dest=dest_dir))
-        subprocess.run('cd {} && bash _build_script.sh'.format(build_dir), shell=True)
+        completed = subprocess.run('cd {} && bash _build_script.sh'.format(build_dir), shell=True,
+                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+        log_path = os.path.join(dest_dir, 'build.log')
+        with open(log_path, 'w') as f:
+            f.write(completed.stdout)
         dest_list = os.listdir(dest_dir)
-        if not len(dest_list) == 1:
+        try:
+            dest_filename = next(x for x in dest_list if x.endswith('pkg.tar.xz'))
+        except StopIteration:
             raise BuilderError
-        result_path = os.path.join(dest_dir, dest_list[0])
+        result_path = os.path.join(dest_dir, dest_filename)
+        print(result_path)
