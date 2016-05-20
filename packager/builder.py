@@ -18,13 +18,19 @@ class BuilderError(Exception):
 
 class Builder:
     def __init__(self, package_id):
-        package = Package.objects.get(id=package_id)
-        with closing(urlopen(RPC_URL.format(package.name))) as request:
+        self.package = Package.objects.get(id=package_id)
+
+    @property
+    def package_name(self):
+        return self.package.name
+
+    def build(self):
+        with closing(urlopen(RPC_URL.format(self.package_name))) as request:
             result = json.loads(request.read().decode())
         detail = result['results'][0]
         tar_url = AUR_URL + detail['URLPath']
         date = datetime.datetime.now().isoformat()
-        build_dir = os.path.join(BUILD_ROOT_DIR, package.name, detail['Version'], date)
+        build_dir = os.path.join(BUILD_ROOT_DIR, self.package_name, detail['Version'], date)
         package_name = detail['Name']
         tar_path = os.path.join(build_dir, package_name)
         os.makedirs(build_dir, 0o700)
