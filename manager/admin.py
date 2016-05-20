@@ -10,7 +10,7 @@ admin.site.register(Package, PackageAdmin)
 
 
 class BuildAdmin(admin.ModelAdmin):
-    list_display = ('id', 'package', 'version', 'date')
+    list_display = ('id', 'package', 'version', 'date', 'status')
 
 
 admin.site.register(Build, BuildAdmin)
