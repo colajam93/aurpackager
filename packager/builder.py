@@ -24,13 +24,13 @@ class Builder:
     def package_name(self):
         return self.package.name
 
-    def build(self):
+    def build(self, date):
         with closing(urlopen(RPC_URL.format(self.package_name))) as request:
             result = json.loads(request.read().decode())
         detail = result['results'][0]
         tar_url = AUR_URL + detail['URLPath']
-        date = datetime.datetime.now().isoformat()
-        build_dir = os.path.join(BUILD_ROOT_DIR, self.package_name, detail['Version'], date)
+        version = detail['Version']
+        build_dir = os.path.join(BUILD_ROOT_DIR, self.package_name, version, date.isoformat())
         package_name = detail['Name']
         tar_path = os.path.join(build_dir, package_name)
         os.makedirs(build_dir, 0o700)
@@ -62,4 +62,4 @@ makepkg -s
         except StopIteration:
             raise BuilderError
         result_path = os.path.join(dest_dir, dest_filename)
-        print(result_path)
+        return result_path, log_path, version
