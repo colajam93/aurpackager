@@ -9,7 +9,7 @@ def package_list(request):
 
 
 def package_detail(request, package_id):
-    builds = Build.objects.filter(package_id=package_id).order_by('date')
+    builds = Build.objects.filter(package_id=package_id).order_by('-date')
     for build, number in zip(builds, range(1, len(builds) + 1)):
         build.number = number
     return render(request, 'package_detail.html', {'package_id': package_id, 'builds': builds})
@@ -26,7 +26,7 @@ def package_build(request, package_id):
 
 def build_detail(request, package_id, build_number):
     try:
-        build = Build.objects.filter(package_id=package_id).order_by('date')[int(build_number) - 1]
+        build = Build.objects.filter(package_id=package_id).order_by('-date')[int(build_number) - 1]
     except IndexError:
         return redirect('manager:package_list')
     if build:
