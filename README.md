@@ -50,7 +50,7 @@ $ ./manage.py runserver
 
 ## Add Package
 
-1. Access to admin page.
+1. Access to admin page(`/admin`).
 2. Add package.
 Note: The name field must correspond to AUR package name.
 
