@@ -76,7 +76,8 @@ def build_install(request, package_name, build_number):
         build = None
     if build and build.status == Build.SUCCESS:
         import subprocess
-        subprocess.run('sudo -S pacman -U --noconfirm {}'.format(build.result_path), shell=True)
+        subprocess.Popen('sudo -S pacman -U --noconfirm {}'.format(build.result_path), shell=True, close_fds=True,
+                         stdin=None, stdout=None, stderr=None)
         return HttpResponse(json.dumps({'result': True}), content_type='application/javascript')
     else:
         return HttpResponse(status=404)
