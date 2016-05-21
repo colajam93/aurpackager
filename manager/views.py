@@ -60,3 +60,10 @@ def build_download(request, package_name, build_number):
             return response
     else:
         return HttpResponse(status=404)
+
+
+def build_all(request):
+    packages = Package.objects.all()
+    for package in packages:
+        BuilderManager().register(package.id)
+    return HttpResponse(json.dumps({'result': True}), content_type='application/javascript')
