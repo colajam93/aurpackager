@@ -6,7 +6,7 @@
     <h3 class="page-header">Package Detail</h3>
 
     <a href="{% url 'manager:package_list' %}">Package List</a>
-    <form action="{% url 'manager:package_build' package_id=package_id %}" method="get" class="form-horizontal"
+    <form action="{% url 'manager:package_build' package_name=package_name %}" method="get" class="form-horizontal"
           role="form">
         <button type="submit" class="btn btn-primary">Build!</button>
     </form>
@@ -21,7 +21,7 @@
         </thead>
         <tbody>
         {% for build in builds %}
-            <tr data-href="{% url 'manager:build_detail' package_id=package_id build_id=build.id %}"
+            <tr data-href="{% url 'manager:build_detail' package_name=package_name build_number=build.number %}"
                 class="clickable-pointer">
                 <td>{{ build.number }}</td>
                 <td>{{ build.date }}</td>

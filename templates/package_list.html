@@ -13,7 +13,7 @@
         </thead>
         <tbody>
         {% for package in packages %}
-            <tr data-href="{% url 'manager:package_detail' package_id=package.id %}" class="clickable-pointer">
+            <tr data-href="{% url 'manager:package_detail' package_name=package.name %}" class="clickable-pointer">
                 <td>{{ package.id }}</td>
                 <td>{{ package.name }}</td>
             </tr>
