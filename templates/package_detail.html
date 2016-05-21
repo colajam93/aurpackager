@@ -12,7 +12,7 @@
 {% endblock nav %}
 
 {% block content %}
-    <a href="{% url 'manager:package_build' package_name=package_name %}" class="btn btn-success">Build!</a>
+    <a onclick="sendQuery()" class="btn btn-success">Build!</a>
     <table class="table table-striped table-bordered table-hover">
         <thead>
         <tr>
@@ -34,4 +34,17 @@
         {% endfor %}
         </tbody>
     </table>
+    <script type="application/javascript">
+        function sendQuery() {
+            $.ajax({
+                url: "{% url 'manager:package_build' package_name=package_name %}",
+                dataType: 'json'
+            }).then((data) => {
+                        if (data['result']) {
+                            location.reload();
+                        }
+                    }
+            );
+        }
+    </script>
 {% endblock content %}
