@@ -4,6 +4,7 @@ from packager.manager import BuilderManager
 from django.http import HttpResponse
 import json
 import os.path
+from django.core.files import File
 
 
 def package_list(request):
@@ -58,8 +59,10 @@ def build_download(request, package_name, build_number):
         build = None
     if build and build.status == Build.SUCCESS:
         with open(build.result_path, 'rb') as f:
-            response = HttpResponse(f, content_type='application/x-xz')
+            ff = File(f)
+            response = HttpResponse(ff, content_type='application/x-xz')
             response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(build.result_path))
+            response['Content-Length'] = ff.size
             return response
     else:
         return HttpResponse(status=404)
