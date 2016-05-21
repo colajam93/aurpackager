@@ -16,7 +16,7 @@ def package_detail(request, package_name):
     builds = Build.objects.filter(package_id=package.id).order_by('-date')
     for build, number in zip(builds, range(1, len(builds) + 1)):
         build.number = number
-    return render(request, 'package_detail.html', {'package_name': package_name, 'builds': builds})
+    return render(request, 'package_detail.html', {'package': package, 'builds': builds})
 
 
 def package_build(request, package_name):
