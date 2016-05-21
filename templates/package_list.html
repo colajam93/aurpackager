@@ -4,7 +4,7 @@
 
 {% block content %}
     <h3 class="page-header">Package List</h3>
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered table-hover">
         <thead>
         <tr>
             <th>ID</th>
@@ -13,8 +13,8 @@
         </thead>
         <tbody>
         {% for package in packages %}
-            <tr>
-                <td><a href="{% url 'manager:package_detail' package_id=package.id %}">{{ package.id }}</a></td>
+            <tr data-href="{% url 'manager:package_detail' package_id=package.id %}" class="clickable-pointer">
+                <td>{{ package.id }}</td>
                 <td>{{ package.name }}</td>
             </tr>
         {% endfor %}

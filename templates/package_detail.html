@@ -10,22 +10,23 @@
           role="form">
         <button type="submit" class="btn btn-primary">Build!</button>
     </form>
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered table-hover">
         <thead>
         <tr>
             <th>ID</th>
             <th>Date</th>
             <th>Version</th>
+            <th>Status</th>
         </tr>
         </thead>
         <tbody>
         {% for build in builds %}
-            <tr>
-                <td>
-                    <a href="{% url 'manager:build_detail' package_id=package_id build_number=build.number %}">{{ build.number }}</a>
-                </td>
+            <tr data-href="{% url 'manager:build_detail' package_id=package_id build_number=build.number %}"
+                class="clickable-pointer">
+                <td>{{ build.number }}</td>
                 <td>{{ build.date }}</td>
                 <td>{{ build.version }}</td>
+                <td>{{ build.status }}</td>
             </tr>
         {% endfor %}
         </tbody>
