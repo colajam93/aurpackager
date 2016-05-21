@@ -23,7 +23,7 @@ Execute following command as `root`.
 - Install depends
 
 ```
-# pacman -S python python-pip python-virtualenv bower git
+# pacman -S --needed base-devel python python-pip python-virtualenv bower git
 ```
 
 - Prepare files
