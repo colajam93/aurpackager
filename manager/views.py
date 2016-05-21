@@ -35,8 +35,10 @@ def build_detail(request, package_name, build_number):
         build.number = build_number
     except IndexError:
         build = None
-    with open(build.log_path, 'r') as f:
-        log = f.read()
+    log = ''
+    if not build.status == Build.BUILDING:
+        with open(build.log_path, 'r') as f:
+            log = f.read()
     if build:
         is_success = build.status == Build.SUCCESS
         return render(request, 'build_detail.html',
