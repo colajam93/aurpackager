@@ -3,6 +3,7 @@ from manager.models import Package, Build
 from packager.manager import BuilderManager
 from django.http import HttpResponse
 import json
+import os.path
 
 
 def package_list(request):
@@ -34,7 +35,24 @@ def build_detail(request, package_name, build_number):
         build.number = build_number
     except IndexError:
         build = None
+    with open(build.log_path, 'r') as f:
+        log = f.read()
     if build:
-        return render(request, 'build_detail.html', {'build': build, 'package': build.package})
+        return render(request, 'build_detail.html', {'build': build, 'package': build.package, 'log': log})
     else:
         return redirect('manager:package_list')
+
+
+def build_download(request, package_name, build_number):
+    package = Package.objects.get(name=package_name)
+    try:
+        build = Build.objects.filter(package_id=package.id).order_by('-date')[int(build_number) - 1]
+    except IndexError:
+        build = None
+    if build and build.status == Build.SUCCESS:
+        with open(build.result_path, 'rb') as f:
+            response = HttpResponse(f, content_type='application/x-xz')
+            response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(build.result_path))
+            return response
+    else:
+        return HttpResponse(status=404)

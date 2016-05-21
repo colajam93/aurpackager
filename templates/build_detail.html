@@ -15,7 +15,27 @@
 {% endblock nav %}
 
 {% block content %}
-    name: {{ package.name }}<br>
-    version: {{ build.version }}<br>
-    date: {{ build.date }}<br>
+    <p>
+    <a href="{% url 'manager:build_download' package_name=package.name build_number=build.number %} "
+       class="btn btn-success">Download!</a>
+    </p>
+    <p>
+    <table class="table table-striped table-bordered table-hover">
+        <tr>
+            <th>Date</th>
+            <td>{{ build.date }}</td>
+        </tr>
+        <tr>
+            <th>Version</th>
+            <td>{{ build.version }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ build.status }}</td>
+        </tr>
+    </table>
+    </p>
+    <pre class="bg-faded">
+        {{ log | safe }}
+    </pre>
 {% endblock content %}
