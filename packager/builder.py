@@ -63,7 +63,7 @@ class Builder:
         build_script = '''
 #!/bin/bash
 
-sudo su packager
+su packager
 cd {build_dir}
 tar xvf {package_name}
 cd {package_name}
