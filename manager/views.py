@@ -24,8 +24,11 @@ def package_build(request, package_id):
         return redirect('manager:package_list')
 
 
-def build_detail(request, package_id, build_id):
-    build = Build.objects.get(id=build_id)
+def build_detail(request, package_id, build_number):
+    try:
+        build = Build.objects.filter(package_id=package_id).order_by('date')[int(build_number) - 1]
+    except IndexError:
+        return redirect('manager:package_list')
     if build:
         return render(request, 'build_detail.html', {'build': build, 'package': build.package})
     else:

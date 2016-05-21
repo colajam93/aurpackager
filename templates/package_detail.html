@@ -22,7 +22,7 @@
         {% for build in builds %}
             <tr>
                 <td>
-                    <a href="{% url 'manager:build_detail' package_id=package_id build_id=build.id %}">{{ build.number }}</a>
+                    <a href="{% url 'manager:build_detail' package_id=package_id build_number=build.number %}">{{ build.number }}</a>
                 </td>
                 <td>{{ build.date }}</td>
                 <td>{{ build.version }}</td>
