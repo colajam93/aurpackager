@@ -15,10 +15,12 @@
 {% endblock nav %}
 
 {% block content %}
-    <p>
-    <a href="{% url 'manager:build_download' package_name=package.name build_number=build.number %} "
-       class="btn btn-success">Download!</a>
-    </p>
+    {% if is_success %}
+        <p>
+            <a href="{% url 'manager:build_download' package_name=package.name build_number=build.number %} "
+               class="btn btn-success">Download!</a>
+        </p>
+    {% endif %}
     <p>
     <table class="table table-striped table-bordered table-hover">
         <tr>

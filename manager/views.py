@@ -38,7 +38,9 @@ def build_detail(request, package_name, build_number):
     with open(build.log_path, 'r') as f:
         log = f.read()
     if build:
-        return render(request, 'build_detail.html', {'build': build, 'package': build.package, 'log': log})
+        is_success = build.status == Build.SUCCESS
+        return render(request, 'build_detail.html',
+                      {'build': build, 'package': build.package, 'log': log, 'is_success': is_success})
     else:
         return redirect('manager:package_list')
 
