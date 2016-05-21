@@ -63,11 +63,12 @@ class Builder:
         build_script = '''
 #!/bin/bash
 
+sudo su packager
 cd {build_dir}
 tar xvf {package_name}
 cd {package_name}
 export PKGDEST='{dest}'
-makepkg -s
+makepkg -s --noconfirm
 '''
         build_script_path = os.path.join(build_dir, '_build_script.sh')
         with open(build_script_path, 'w') as f:
