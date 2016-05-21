@@ -16,7 +16,7 @@
         <a onclick="sendQuery()" class="btn btn-success">Build</a>
         <a href="{% url 'manager:build_download' package_name=package.name build_number=1 %}"
            class="btn btn-success">Download Latest</a>
-        <a href="{% url 'manager:build_install' package_name=package.name build_number=1 %}"
+        <a onclick="sendQuery2()"
            class="btn btn-success">Install Latest</a>
     </p>
     <table class="table table-striped table-bordered table-hover">
@@ -53,6 +53,11 @@
             );
         }
 
-
+        function sendQuery2() {
+            $.ajax({
+                url: "{% url 'manager:build_install' package_name=package.name build_number=1 %}",
+                dataType: 'json'
+            });
+        }
     </script>
 {% endblock content %}
