@@ -2,11 +2,19 @@
 
 {% block title %}Build Detail{% endblock title %}
 
+{% block nav %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'manager:package_list' %}">List</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'manager:package_detail' package_name=package.name %}">{{ package.name }}</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link" href="#">{{ build.number }}</a>
+    </li>
+{% endblock nav %}
+
 {% block content %}
-    <h3 class="page-header">Build Detail</h3>
-    <a href="{% url 'manager:package_detail' package_name=package.name %}">Back to Package {{ package.name }} Detail</a>
-    <br>
-    <a href="{% url 'manager:package_list' %}">Package List</a><br>
     name: {{ package.name }}<br>
     version: {{ build.version }}<br>
     date: {{ build.date }}<br>

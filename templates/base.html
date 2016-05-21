@@ -22,12 +22,25 @@
         .clickable-pointer {
             cursor: pointer;
         }
+
+        .top {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
     </style>
     <title>{% block title %}Package Manager{% endblock %}</title>
     {% block extrahead %}{% endblock %}
 </head>
 <body>
 <div class="container">
+    <nav class="top navbar navbar-light bg-faded">
+        <a class="navbar-brand" href="{% url 'manager:package_list' %}">AUR Packager</a>
+        <ul class="nav navbar-nav">
+            {% block nav %}
+                {{ nav }}
+            {% endblock %}
+        </ul>
+    </nav>
     {% block content %}
         {{ content }}
     {% endblock %}

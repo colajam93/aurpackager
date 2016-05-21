@@ -29,6 +29,7 @@ def build_detail(request, package_name, build_number):
     package = Package.objects.get(name=package_name)
     try:
         build = Build.objects.filter(package_id=package.id).order_by('-date')[int(build_number) - 1]
+        build.number = build_number
     except IndexError:
         build = None
     if build:

@@ -2,14 +2,17 @@
 
 {% block title %}Package Detail{% endblock title %}
 
-{% block content %}
-    <h3 class="page-header">Package Detail</h3>
+{% block nav %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'manager:package_list' %}">List</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link" href="#">{{ package_name }}</a>
+    </li>
+{% endblock nav %}
 
-    <a href="{% url 'manager:package_list' %}">Package List</a>
-    <form action="{% url 'manager:package_build' package_name=package_name %}" method="get" class="form-horizontal"
-          role="form">
-        <button type="submit" class="btn btn-primary">Build!</button>
-    </form>
+{% block content %}
+    <a href="{% url 'manager:package_build' package_name=package_name %}" class="btn btn-success">Build!</a>
     <table class="table table-striped table-bordered table-hover">
         <thead>
         <tr>
