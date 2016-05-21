@@ -37,8 +37,11 @@ def build_detail(request, package_name, build_number):
         build = None
     log = ''
     if not build.status == Build.BUILDING:
-        with open(build.log_path, 'r') as f:
-            log = f.read()
+        try:
+            with open(build.log_path, 'r') as f:
+                log = f.read()
+        except FileNotFoundError:
+            pass
     if build:
         is_success = build.status == Build.SUCCESS
         return render(request, 'build_detail.html',

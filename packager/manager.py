@@ -31,7 +31,7 @@ class BuilderManager(metaclass=Singleton):
             build.save()
             try:
                 builder.build(date)
-            except BuilderError:
+            except (BuilderError, PermissionError):
                 build.status = Build.FAILURE
             else:
                 build.status = Build.SUCCESS
