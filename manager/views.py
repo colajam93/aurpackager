@@ -68,6 +68,20 @@ def build_download(request, package_name, build_number):
         return HttpResponse(status=404)
 
 
+def build_install(request, package_name, build_number):
+    package = Package.objects.get(name=package_name)
+    try:
+        build = Build.objects.filter(package_id=package.id).order_by('-date')[int(build_number) - 1]
+    except IndexError:
+        build = None
+    if build and build.status == Build.SUCCESS:
+        import subprocess
+        subprocess.run('sudo -S pacman -U --noconfirm {}'.format(build.result_path), shell=True)
+        return HttpResponse(json.dumps({'result': True}), content_type='application/javascript')
+    else:
+        return HttpResponse(status=404)
+
+
 def build_all(request):
     packages = Package.objects.all()
     for package in packages:
