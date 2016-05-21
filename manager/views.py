@@ -9,7 +9,9 @@ def package_list(request):
 
 
 def package_detail(request, package_id):
-    builds = Build.objects.filter(package_id=package_id).order_by('id')
+    builds = Build.objects.filter(package_id=package_id).order_by('date')
+    for build, number in zip(builds, range(1, len(builds) + 1)):
+        build.number = number
     return render(request, 'package_detail.html', {'package_id': package_id, 'builds': builds})
 
 

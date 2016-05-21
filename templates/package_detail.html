@@ -14,18 +14,18 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>Version</th>
             <th>Date</th>
+            <th>Version</th>
         </tr>
         </thead>
         <tbody>
         {% for build in builds %}
             <tr>
                 <td>
-                    <a href="{% url 'manager:build_detail' package_id=package_id build_id=build.id %}">{{ build.id }}</a>
+                    <a href="{% url 'manager:build_detail' package_id=package_id build_id=build.id %}">{{ build.number }}</a>
                 </td>
-                <td>{{ build.version }}</td>
                 <td>{{ build.date }}</td>
+                <td>{{ build.version }}</td>
             </tr>
         {% endfor %}
         </tbody>
