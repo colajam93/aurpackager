@@ -40,12 +40,14 @@ class Builder:
         tar_url = AUR_URL + detail['URLPath']
         self.version = detail['Version']
 
-        # path example:
+        # path structure:
         # build_dir = [BUILD_ROOT_DIR]/[package_name]/[version]/[date]
         # build_script = [build_dir]/_build_script.sh
         # dest = [build_dir]/[package].pkg.tar.xz,build.log
         # work_dir = [build_dir]/[package_name]/PKGBUILD,etc.
         build_dir = os.path.join(BUILD_ROOT_DIR, self.package_name, self.version, date.isoformat())
+        # remove ':'
+        build_dir = build_dir.translate(str.maketrans(':', '_'))
         tar_path = os.path.join(build_dir, self.package_name)
         dest_dir = os.path.join(build_dir, '_dest')
         self.log_path = os.path.join(dest_dir, 'build.log')
