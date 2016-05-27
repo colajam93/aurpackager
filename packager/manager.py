@@ -2,7 +2,7 @@ from packager.builder import Builder, BuilderError
 import threading
 import queue
 import time
-from misc.singleton import Singleton
+from lib.singleton import Singleton
 from manager.models import Build
 import django.utils.timezone as timezone
 
