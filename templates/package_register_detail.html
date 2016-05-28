@@ -94,12 +94,7 @@
             });
         }
         function sendQuery() {
-            $.ajax({
-                type: 'POST',
-                url: "{% url 'api:package_register' %}",
-                data: {"name": "{{ package_name }}", "depend": document.getElementById('withDepend').checked},
-                dataType: 'json'
-            }).then(function (result) {
+            function openModal(keys, result) {
                 const table = document.createElement('table');
                 table.className += " table table-striped table-bordered table-hover";
                 const header = table.createTHead();
@@ -108,9 +103,6 @@
                 hrow.insertCell(1).innerHTML = "Value";
                 const body = document.createElement('tbody');
                 table.appendChild(body);
-                const keys = [];
-                keys.push('native');
-                keys.push('foreign');
                 keys.forEach(function (key) {
                     const row = body.insertRow();
                     row.insertCell(0).innerHTML = key;
@@ -123,31 +115,24 @@
                 }
                 content.appendChild(table);
                 $('#myModal').modal('toggle');
+
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:package_register' %}",
+                data: {"name": "{{ package_name }}", "depend": document.getElementById('withDepend').checked},
+                dataType: 'json'
+            }).then(function (result) {
+                const keys = [];
+                keys.push('native');
+                keys.push('foreign');
+                openModal(keys, result);
             }).fail(function (e) {
-                const table = document.createElement('table');
-                table.className += " table table-striped table-bordered table-hover";
-                const header = table.createTHead();
-                const hrow = header.insertRow();
-                hrow.insertCell(0).innerHTML = "Key";
-                hrow.insertCell(1).innerHTML = "Value";
-                const body = document.createElement('tbody');
-                table.appendChild(body);
-                const responseJson = JSON.parse(e.responseText);
                 const keys = [];
                 keys.push('detail');
-                keys.forEach(function (key) {
-                    const row = body.insertRow();
-                    row.insertCell(0).innerHTML = key;
-                    row.insertCell(1).innerHTML = responseJson[key];
-                });
-                const content = document.getElementById('modalContent');
-                while (content.firstChild) {
-                    content.removeChild(content.firstChild);
-                }
-                content.appendChild(table);
-                $('#myModal').modal('toggle');
+                openModal(keys, JSON.parse(e.responseText));
             });
-
         }
     </script>
 {% endblock content %}
