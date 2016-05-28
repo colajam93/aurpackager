@@ -50,18 +50,20 @@ $ ./manage.py runserver
 
 ## Add Package
 
-1. Access to admin page(`/admin`).
-2. Add package.
-Note: The name field must correspond to AUR package name.
+1. Click 'Register' button.
+2. Search with package name and select one from list.
+3. Check detail and click 'Register' button.
+If 'with dependencies' is enabled, dependency packages will be installed(official packages) and registered(AUR packages).
 
 ## TODO
 
 - Authentication
 - Error handling
-- Add package without admin page.
-- Auto detect depend to AUR package.
 - Auto update check
 - Notification
+- Remove package without admin page.
+- Refactor
+- Apply Bootstrap' grid system
 
 ## License
 
