@@ -50,6 +50,8 @@
                 keys.push('NumVotes');
                 keys.push('Popularity');
                 keys.push('Depends');
+                keys.push('MakeDepends');
+                keys.push('OptDepends');
                 keys.forEach(function (key) {
                     const row = body.insertRow();
                     row.insertCell(0).innerHTML = key;
@@ -58,6 +60,7 @@
                 let timeKeys = [];
                 timeKeys.push('FirstSubmitted');
                 timeKeys.push('LastModified');
+                timeKeys.push('OutOfDate');
                 timeKeys.forEach(function (key) {
                     const row = body.insertRow();
                     row.insertCell(0).innerHTML = key;
