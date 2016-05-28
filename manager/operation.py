@@ -12,7 +12,19 @@ class OperationError(Exception):
         return repr(self.reason)
 
 
+def __is_registered(name):
+    try:
+        Package.objects.get(name=name)
+    except Package.DoesNotExist:
+        return False
+    else:
+        return True
+
+
 def register(name):
+    if __is_registered(name):
+        raise OperationError('{} has already installed'.format(name))
+
     info = query.info(name)
     native = []
     foreign = []
@@ -32,7 +44,12 @@ def register(name):
 
     sync.install(native, asdeps=True)
     for package in foreign:
-        register(package)
+        if not __is_registered(package):
+            register(package)
 
     package = Package(name=name)
     package.save()
+    ret = dict()
+    ret['native'] = native
+    ret['foreign'] = foreign
+    return ret

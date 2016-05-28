@@ -46,13 +46,19 @@ def package_register(request):
     else:
         ret = dict()
         try:
-            operation.register(method['name'])
+            r = operation.register(method['name'])
         except operation.OperationError as e:
             ret['result'] = False
-            ret['error'] = e
+            ret['error'] = str(e)
         else:
+            ret.update(r)
+            ret['name'] = method['name']
             ret['result'] = True
 
-        c = RequestContext(request, {'result': json.dumps({'result': ret})})
+        c = RequestContext(request, {'result': json.dumps(ret)})
         t = Template('{{result | safe}}')
-        return HttpResponse(t.render(c), content_type='application/json')
+        response = HttpResponse(t.render(c), content_type='application/json')
+        if not ret['result']:
+            response.status_code = 400
+        return response
+
