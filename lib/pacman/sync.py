@@ -22,5 +22,5 @@ def install(package, asdeps=False):
 
 def exist(package):
     """check 'pacman -Si package' return code"""
-    result = execute('pacman -Si {}'.format(package))
+    result = execute('pacman -Ss "^{}$"'.format(package))
     return not bool(result.returncode)

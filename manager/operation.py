@@ -45,11 +45,13 @@ def register(name, with_depend=False):
         sync.install(native, asdeps=True)
         for package in foreign:
             if not __is_registered(package):
-                register(package, with_depend=True)
+                r = register(package, with_depend=True)
+                native.extend(r['native'])
+                foreign.extend(r['foreign'])
 
     package = Package(name=name)
     package.save()
     ret = dict()
-    ret['native'] = native
-    ret['foreign'] = foreign
+    ret['native'] = list(set(native))
+    ret['foreign'] = list(set(foreign))
     return ret
