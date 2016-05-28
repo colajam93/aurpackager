@@ -21,31 +21,31 @@ def __is_registered(name):
         return True
 
 
-def register(name):
+def register(name, with_depend=False):
     if __is_registered(name):
         raise OperationError('{} has already installed'.format(name))
 
     info = query.info(name)
     native = []
     foreign = []
-    depends = []
-    if hasattr(info, 'Depends'):
-        depends.append(info.Depends)
-    if hasattr(info, 'MakeDepends'):
-        depends.append(info.MakeDepends)
-    for depend in itertools.chain(*depends):
-        depend_name = depend.translate(str.maketrans('>=', '<<')).split('<')[0]
-        if sync.exist(depend_name):
-            native.append(depend_name)
-        elif query.exist(depend_name):
-            foreign.append(depend_name)
-        else:
-            raise OperationError('{} not found'.format(depend_name))
-
-    sync.install(native, asdeps=True)
-    for package in foreign:
-        if not __is_registered(package):
-            register(package)
+    if with_depend:
+        depends = []
+        if hasattr(info, 'Depends'):
+            depends.append(info.Depends)
+        if hasattr(info, 'MakeDepends'):
+            depends.append(info.MakeDepends)
+        for depend in itertools.chain(*depends):
+            depend_name = depend.translate(str.maketrans('>=', '<<')).split('<')[0]
+            if sync.exist(depend_name):
+                native.append(depend_name)
+            elif query.exist(depend_name):
+                foreign.append(depend_name)
+            else:
+                raise OperationError('{} not found'.format(depend_name))
+        sync.install(native, asdeps=True)
+        for package in foreign:
+            if not __is_registered(package):
+                register(package)
 
     package = Package(name=name)
     package.save()

@@ -12,6 +12,8 @@
     <form class="form-inline" action="javascript:void(0)">
         <fieldset class="form-group">
             <button type="submit" class="btn btn-primary" onclick="sendQuery()">Register</button>
+            <label for="withDepend">with dependencies</label>
+            <input type="checkbox" id="withDepend" checked>
         </fieldset>
     </form>
     <div id="resultTable">
@@ -78,7 +80,7 @@
             $.ajax({
                 type: 'POST',
                 url: "{% url 'api:package_register' %}",
-                data: {"name": "{{ package_name }}"},
+                data: {"name": "{{ package_name }}", "depend": document.getElementById('withDepend').checked},
                 dataType: 'json'
             }).then(function (results) {
             });

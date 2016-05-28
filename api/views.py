@@ -44,9 +44,10 @@ def package_register(request):
     if 'name' not in method or not method['name']:
         return HttpResponse(status=400)
     else:
+        with_depend = 'depend' in method and method['depend'] == 'true'
         ret = dict()
         try:
-            r = operation.register(method['name'])
+            r = operation.register(method['name'], with_depend=with_depend)
         except operation.OperationError as e:
             ret['result'] = False
             ret['error'] = str(e)
@@ -61,4 +62,3 @@ def package_register(request):
         if not ret['result']:
             response.status_code = 400
         return response
-
