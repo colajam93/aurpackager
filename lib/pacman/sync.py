@@ -13,7 +13,7 @@ def system_upgrade():
 
 def install(package, asdeps=False):
     """pacman -S [--asdeps] package"""
-    option = ['--noconfirm']
+    option = ['--noconfirm', '--needed']
     if asdeps:
         option.append('--asdeps')
     command = 'sudo -S pacman -S {} {}'.format(' '.join(option), package)
