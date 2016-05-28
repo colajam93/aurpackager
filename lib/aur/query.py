@@ -26,6 +26,7 @@ class AURInfo(AttrDict):
     def __init__(self, package_dict):
         super().__init__(package_dict)
         self.tar_url = AUR_URL + self.URLPath
+        self.aur_url = AUR_URL + '/packages/{}'.format(self.Name)
 
 
 def __aur_query(url):
