@@ -10,6 +10,9 @@
 
 {% block content %}
     <p>
+        <button type="button" class="btn btn-primary" onclick="location='{% url 'manager:package_register' %}' ">
+            Register
+        </button>
         <a onclick="sendQuery()" class="btn btn-success">Build All</a>
     </p>
     <table class="table table-striped table-bordered table-hover">
