@@ -41,7 +41,7 @@
                 for (result of results) {
                     const row = body.insertRow();
                     row.className += " clickable-pointer";
-                    row.setAttribute('data-href', '#');
+                    row.setAttribute('data-href', "/packages/register/" + result['Name']);
                     row.insertCell(0).innerHTML = result['Name'];
                     row.insertCell(1).innerHTML = "<a href=" + result['aur_url'] + ">View on AUR</a>";
                 }

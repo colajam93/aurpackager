@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Package Register Detail{% endblock title %}
+
+{% block nav %}
+    <li class="nav-item active">
+        <a class="nav-link" href="#">Register</a>
+    </li>
+{% endblock nav %}
+
+{% block content %}
+    <form class="form-inline" action="javascript:void(0)">
+        <fieldset class="form-group">
+            <button type="submit" class="btn btn-primary" onclick="sendQuery()">Register</button>
+        </fieldset>
+    </form>
+    <div id="resultTable">
+    </div>
+    <script type="application/javascript">
+        onload = getInfo();
+        function getInfo() {
+            const name = "{{ package_name }}";
+            if (!name) {
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:package_info' %}",
+                data: {"name": name},
+                dataType: 'json'
+            }).then(function (result) {
+                const table = document.createElement('table');
+                table.className += " table table-striped table-bordered table-hover";
+                const header = table.createTHead();
+                const hrow = header.insertRow();
+                hrow.insertCell(0).innerHTML = "Key";
+                hrow.insertCell(1).innerHTML = "Value";
+                const body = document.createElement('tbody');
+                table.appendChild(body);
+                let keys = [];
+                keys.push('Name');
+                keys.push('Version');
+                keys.push('PackageBase');
+                keys.push('Description');
+                keys.push('URL');
+                keys.push('Keywords');
+                keys.push('License');
+                keys.push('Conflicts');
+                keys.push('Maintainer');
+                keys.push('NumVotes');
+                keys.push('Popularity');
+                keys.push('Depends');
+                keys.forEach(function (key) {
+                    const row = body.insertRow();
+                    row.insertCell(0).innerHTML = key;
+                    row.insertCell(1).innerHTML = result[key];
+                });
+                let timeKeys = [];
+                timeKeys.push('FirstSubmitted');
+                timeKeys.push('LastModified');
+                timeKeys.forEach(function (key) {
+                    const row = body.insertRow();
+                    row.insertCell(0).innerHTML = key;
+                    row.insertCell(1).innerHTML = new Date(result[key] * 1000).toISOString();
+                });
+                const root = document.getElementById('resultTable');
+                // remove current children
+                while (root.firstChild) {
+                    root.removeChild(root.firstChild);
+                }
+                root.appendChild(table);
+            });
+        }
+        function sendQuery() {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:package_register' %}",
+                data: {"name": "{{ package_name }}"},
+                dataType: 'json'
+            }).then(function (results) {
+            });
+
+        }
+    </script>
+{% endblock content %}

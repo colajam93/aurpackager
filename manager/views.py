@@ -33,6 +33,10 @@ def package_register(request):
     return render(request, 'package_register.html')
 
 
+def package_register_detail(request, package_name):
+    return render(request, 'package_register_detail.html', {'package_name': package_name})
+
+
 def build_detail(request, package_name, build_number):
     package = Package.objects.get(name=package_name)
     try:
