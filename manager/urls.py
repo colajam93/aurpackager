@@ -4,6 +4,7 @@ from manager import views
 urlpatterns = [
     url(r'^$', views.package_list, name='package_list'),
     url(r'^packages/$', views.package_list, name='package_list'),
+    url(r'^packages/register/$', views.package_register, name='package_register'),
     url(r'^packages/build_all/$', views.build_all, name='build_all'),
     url(r'^packages/(?P<package_name>[a-zA-Z0-9_+-]+)/$', views.package_detail, name='package_detail'),
     url(r'^packages/(?P<package_name>[a-zA-Z0-9_+-]+)/build/$', views.package_build, name='package_build'),

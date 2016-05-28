@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Package Register{% endblock title %}
+
+{% block nav %}
+    <li class="nav-item active">
+        <a class="nav-link" href="#">Register</a>
+    </li>
+{% endblock nav %}
+
+{% block content %}
+    <form class="form-inline" action="javascript:void(0)">
+        <fieldset class="form-group">
+            <label for="packageName">Package Name</label>
+            <input type="text" class="form-control" id="packageName" placeholder="Package name" required>
+            <button type="submit" class="btn btn-primary" onclick="sendQuery()">Search</button>
+        </fieldset>
+    </form>
+    <div id="resultTable">
+    </div>
+    <script type="application/javascript">
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        function sendQuery() {
+            const name = document.getElementById('packageName').value;
+            if (!name) {
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:package_search' %}",
+                data: {"name": name},
+                dataType: 'json'
+            }).then(function (results) {
+                const table = document.createElement('table');
+                table.className += " table table-striped table-bordered table-hover";
+                const header = table.createTHead();
+                const hrow = header.insertRow();
+                hrow.insertCell(0).innerHTML = "Name";
+                hrow.insertCell(1).innerHTML = "AUR";
+                const body = document.createElement('tbody');
+                table.appendChild(body);
+                for (result of results) {
+                    const row = body.insertRow();
+                    row.className += " clickable-pointer";
+                    row.setAttribute('data-href', '#');
+                    row.insertCell(0).innerHTML = result['Name'];
+                    row.insertCell(1).innerHTML = "<a href=" + result['aur_url'] + ">View on AUR</a>";
+                }
+                const root = document.getElementById('resultTable');
+                // remove current children
+                while (root.firstChild) {
+                    root.removeChild(root.firstChild);
+                }
+                root.appendChild(table);
+                enableTableRowClick();
+            });
+        }
+    </script>
+{% endblock content %}

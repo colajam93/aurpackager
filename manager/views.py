@@ -29,6 +29,10 @@ def package_build(request, package_name):
         return HttpResponse(json.dumps({'result': False}), content_type='application/javascript')
 
 
+def package_register(request):
+    return render(request, 'package_register.html')
+
+
 def build_detail(request, package_name, build_number):
     package = Package.objects.get(name=package_name)
     try:
