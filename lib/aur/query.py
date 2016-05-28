@@ -5,6 +5,7 @@ import json
 AUR_URL = 'https://aur.archlinux.org'
 BASE_URL = AUR_URL + '/rpc/?v=5&'
 INFO_URL = BASE_URL + 'type=info&'
+SEARCH_URL = BASE_URL + 'type=search&'
 
 
 class PackageNotFoundError(Exception):
@@ -55,3 +56,9 @@ def multiple_info(packages):
         if package not in ret:
             ret[package] = None
     return ret
+
+
+def search(package):
+    url = SEARCH_URL + 'arg={}'.format(package)
+    result = __aur_query(url)
+    return [AURInfo(x) for x in result['results']]
