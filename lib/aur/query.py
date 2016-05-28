@@ -63,3 +63,12 @@ def search(package):
     url = SEARCH_URL + 'arg={}'.format(package)
     result = __aur_query(url)
     return [AURInfo(x) for x in result['results']]
+
+
+def exist(package):
+    try:
+        info(package)
+    except PackageNotFoundError:
+        return False
+    else:
+        return True

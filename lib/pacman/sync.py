@@ -20,7 +20,7 @@ def install(package, asdeps=False):
     execute(command, discard_output=True)
 
 
-def exists(package):
+def exist(package):
     """check 'pacman -Si package' return code"""
     result = execute('pacman -Si {}'.format(package))
     return not bool(result.returncode)
