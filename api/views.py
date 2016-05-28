@@ -50,7 +50,7 @@ def package_register(request):
             r = operation.register(method['name'], with_depend=with_depend)
         except operation.OperationError as e:
             ret['result'] = False
-            ret['error'] = str(e)
+            ret['detail'] = str(e)
         else:
             ret.update(r)
             ret['name'] = method['name']

@@ -18,6 +18,23 @@
     </form>
     <div id="resultTable">
     </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Register {{ package_name }}</h4>
+                </div>
+                <div class="modal-body" id="modalContent">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script type="application/javascript">
         onload = getInfo();
         function getInfo() {
@@ -82,7 +99,53 @@
                 url: "{% url 'api:package_register' %}",
                 data: {"name": "{{ package_name }}", "depend": document.getElementById('withDepend').checked},
                 dataType: 'json'
-            }).then(function (results) {
+            }).then(function (result) {
+                const table = document.createElement('table');
+                table.className += " table table-striped table-bordered table-hover";
+                const header = table.createTHead();
+                const hrow = header.insertRow();
+                hrow.insertCell(0).innerHTML = "Key";
+                hrow.insertCell(1).innerHTML = "Value";
+                const body = document.createElement('tbody');
+                table.appendChild(body);
+                const keys = [];
+                keys.push('native');
+                keys.push('foreign');
+                keys.forEach(function (key) {
+                    const row = body.insertRow();
+                    row.insertCell(0).innerHTML = key;
+                    row.insertCell(1).innerHTML = result[key];
+                });
+
+                const content = document.getElementById('modalContent');
+                while (content.firstChild) {
+                    content.removeChild(content.firstChild);
+                }
+                content.appendChild(table);
+                $('#myModal').modal('toggle');
+            }).fail(function (e) {
+                const table = document.createElement('table');
+                table.className += " table table-striped table-bordered table-hover";
+                const header = table.createTHead();
+                const hrow = header.insertRow();
+                hrow.insertCell(0).innerHTML = "Key";
+                hrow.insertCell(1).innerHTML = "Value";
+                const body = document.createElement('tbody');
+                table.appendChild(body);
+                const responseJson = JSON.parse(e.responseText);
+                const keys = [];
+                keys.push('detail');
+                keys.forEach(function (key) {
+                    const row = body.insertRow();
+                    row.insertCell(0).innerHTML = key;
+                    row.insertCell(1).innerHTML = responseJson[key];
+                });
+                const content = document.getElementById('modalContent');
+                while (content.firstChild) {
+                    content.removeChild(content.firstChild);
+                }
+                content.appendChild(table);
+                $('#myModal').modal('toggle');
             });
 
         }
