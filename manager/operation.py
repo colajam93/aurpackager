@@ -45,7 +45,7 @@ def register(name, with_depend=False):
         sync.install(native, asdeps=True)
         for package in foreign:
             if not __is_registered(package):
-                register(package)
+                register(package, with_depend=True)
 
     package = Package(name=name)
     package.save()
