@@ -93,3 +93,8 @@ def package_build(params):
         ret['result'] = True
         ret['name'] = params['name']
     return ret
+
+
+@make_api()
+def package_build_all(_):
+    operation.build_all()

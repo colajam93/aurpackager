@@ -9,7 +9,6 @@ urlpatterns = [
     url(r'^packages/register/$', views.package_register, name='package_register'),
     url(r'^packages/register/{}/$'.format(__PACKAGE_NAME_REGEX), views.package_register_detail,
         name='package_register_detail'),
-    url(r'^packages/build_all/$', views.build_all, name='build_all'),
     url(r'^packages/(?P<package_name>[a-zA-Z0-9_+-]+)/$', views.package_detail, name='package_detail'),
     url(r'^packages/(?P<package_name>[a-zA-Z0-9_+-]+)/build/$', views.package_build, name='package_build'),
     url(r'^packages/(?P<package_name>[a-zA-Z0-9_+-]+)/(?P<build_number>\d+)/$', views.build_detail,

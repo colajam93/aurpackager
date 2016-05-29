@@ -69,7 +69,7 @@
     <script type="application/javascript">
         function sendBuildAllQuery() {
             $.ajax({
-                url: "{% url 'manager:build_all' %}",
+                url: "{% url 'api:package_build_all' %}",
                 dataType: 'json'
             }).then(function () {
                 window.location.reload(true);

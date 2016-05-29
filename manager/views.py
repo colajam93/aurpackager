@@ -61,7 +61,8 @@ def build_detail(request, package_name, build_number):
     if build:
         is_success = build.status == Build.SUCCESS
         return render(request, 'build_detail.html',
-                      {'build': build, 'package': build.package, 'log': log, 'is_success': is_success, 'active': 'list'})
+                      {'build': build, 'package': build.package, 'log': log, 'is_success': is_success,
+                       'active': 'list'})
     else:
         return redirect('manager:package_list')
 
@@ -96,10 +97,3 @@ def build_install(request, package_name, build_number):
         return HttpResponse(json.dumps({'result': True}), content_type='application/javascript')
     else:
         return HttpResponse(status=404)
-
-
-def build_all(request):
-    packages = Package.objects.all()
-    for package in packages:
-        BuilderManager().register(package.id)
-    return HttpResponse(json.dumps({'result': True}), content_type='application/javascript')

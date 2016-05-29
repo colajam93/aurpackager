@@ -78,3 +78,9 @@ def build(name):
 
     package = Package.objects.get(name=name)
     BuilderManager().register(package.id)
+
+
+def build_all():
+    packages = Package.objects.all()
+    for package in packages:
+        BuilderManager().register(package.id)
