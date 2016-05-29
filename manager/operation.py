@@ -2,6 +2,9 @@ from manager.models import Package
 import lib.aur.query as query
 import lib.pacman.sync as sync
 import itertools
+import shutil
+import os.path
+from packager.settings import BUILD_ROOT_DIR
 
 
 class OperationError(Exception):
@@ -12,7 +15,7 @@ class OperationError(Exception):
         return repr(self.reason)
 
 
-def __is_registered(name):
+def _is_registered(name):
     try:
         Package.objects.get(name=name)
     except Package.DoesNotExist:
@@ -22,7 +25,7 @@ def __is_registered(name):
 
 
 def register(name, with_depend=False):
-    if __is_registered(name):
+    if _is_registered(name):
         raise OperationError('{} has already installed'.format(name))
 
     info = query.info(name)
@@ -44,7 +47,7 @@ def register(name, with_depend=False):
                 raise OperationError('{} not found'.format(depend_name))
         sync.install(native, asdeps=True)
         for package in foreign:
-            if not __is_registered(package):
+            if not _is_registered(package):
                 r = register(package, with_depend=True)
                 native.extend(r['native'])
                 foreign.extend(r['foreign'])
@@ -55,3 +58,14 @@ def register(name, with_depend=False):
     ret['native'] = list(set(native))
     ret['foreign'] = list(set(foreign))
     return ret
+
+
+def remove(name, cleanup=False):
+    if not _is_registered(name):
+        raise OperationError('{} has not installed'.format(name))
+
+    if cleanup:
+        shutil.rmtree(os.path.join(BUILD_ROOT_DIR, name))
+
+    package = Package.objects.get(name=name)
+    package.delete()
