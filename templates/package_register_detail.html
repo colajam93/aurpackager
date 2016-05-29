@@ -1,17 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Package Register Detail{% endblock title %}
+{% block title %}{{ package_name }} - Register{% endblock title %}
 
 {% block content %}
-    <h3>Package Register Detail</h3>
-    <form class="form-inline" action="javascript:void(0)">
-        <fieldset class="form-group">
-            <button type="submit" class="btn btn-primary" onclick="sendQuery()">Register</button>
-            <label for="withDepend">with dependencies</label>
-            <input type="checkbox" id="withDepend" checked>
-        </fieldset>
-    </form>
-    <div id="resultTable">
+    <h3>{{ package_name }}</h3>
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-inline" action="javascript:void(0)">
+                <fieldset class="form-group">
+                    <a class="btn btn-secondary" href="{% url 'manager:package_register' %}">Back
+                        to Search</a>
+                    <button type="submit" class="btn btn-primary" onclick="sendRegisterQuery()">Register</button>
+                    <label for="withDepend">with dependencies</label>
+                    <input type="checkbox" id="withDepend" checked>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div id="resultTable">
+            </div>
+        </div>
     </div>
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -26,7 +36,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="location={% url 'manager:package_list' %} ">Go to Top</button>
+                    <button type="button" class="btn btn-primary"
+                            onclick="window.location={% url 'manager:package_list' %}">
+                        Go to Top
+                    </button>
                 </div>
             </div>
         </div>
@@ -89,7 +102,7 @@
                 root.appendChild(table);
             });
         }
-        function sendQuery() {
+        function sendRegisterQuery() {
             function openModal(keys, result) {
                 const table = document.createElement('table');
                 table.className += " table table-striped table-bordered table-hover";
@@ -104,7 +117,6 @@
                     row.insertCell(0).innerHTML = key;
                     row.insertCell(1).innerHTML = result[key];
                 });
-
                 const content = document.getElementById('modalContent');
                 while (content.firstChild) {
                     content.removeChild(content.firstChild);
