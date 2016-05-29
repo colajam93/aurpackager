@@ -9,7 +9,7 @@
             <a class="btn btn-secondary" href="{% url 'manager:package_detail' package_name=package.name %}">Back
                 to Package Detail</a>
             {% if is_success %}
-                <a class="btn btn-success"
+                <a class="btn btn-primary"
                    href="{% url 'manager:build_download' package_name=package.name build_number=build.number %}"
                    download>Download</a>
             {% endif %}

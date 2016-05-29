@@ -1,55 +1,102 @@
 {% extends "base.html" %}
 
-{% block title %}Package Detail{% endblock title %}
-
+{% block title %}{{ package.name }} - Package Detail{% endblock title %}
 
 {% block content %}
-    <h3>Package Detail</h3>
-    <p>
-        <a onclick="sendQuery()" class="btn btn-success">Build</a>
-        <a href="{% url 'manager:build_download' package_name=package.name build_number=1 %}"
-           class="btn btn-success">Download Latest</a>
-        <a onclick="sendQuery2()"
-           class="btn btn-success">Install Latest</a>
-    </p>
-    <table class="table table-striped table-bordered table-hover">
-        <thead>
-        <tr>
-            <th>Build</th>
-            <th>Date</th>
-            <th>Version</th>
-            <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for build in builds %}
-            <tr data-href="{% url 'manager:build_detail' package_name=package.name build_number=build.number %}"
-                class="clickable-pointer">
-                <td>{{ build.number }}</td>
-                <td>{{ build.date }}</td>
-                <td>{{ build.version }}</td>
-                <td>{{ build.status }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <script type="application/javascript">
-        function sendQuery() {
-            $.ajax({
-                url: "{% url 'manager:package_build' package_name=package.name %}",
-                dataType: 'json'
-            }).then((data) => {
-                        if (data['result']) {
-                            location.reload();
-                        }
-                    }
-            );
-        }
+    <h3>{{ package.name }}</h3>
+    <div class="row">
+        <div class="col-xs-12">
+            <a class="btn btn-secondary" href="{% url 'manager:package_list' %}">Back
+                to Package List</a>
+            <a onclick="sendInstallQuery()"
+               class="btn btn-primary">Install Latest</a>
+            <button type="submit" class="btn btn-primary"
+                    onclick="sendBuildQuery()">
+                Build
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>Build</th>
+                    <th>Date</th>
+                    <th>Version</th>
+                    <th>Status</th>
+                    <th>Operation</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for build in builds %}
+                    <tr data-href="{% url 'manager:build_detail' package_name=package.name build_number=build.number %}"
+                        class="clickable-pointer">
+                        <td>{{ build.number }}</td>
+                        <td>{{ build.date }}</td>
+                        <td>{{ build.version }}</td>
+                        <td>{{ build.status }}</td>
+                        <td>
+                            <a class="btn btn-primary"
+                               href="{% url 'manager:build_download' package_name=package.name build_number=build.number %}"
+                               onclick="window.event.cancelBubble = true;"
+                               download>Download
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-        function sendQuery2() {
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="modalLabel"></h4>
+                </div>
+                <div class="modal-body" id="modalContent">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="application/javascript">
+        function sendInstallQuery() {
             $.ajax({
                 url: "{% url 'manager:build_install' package_name=package.name build_number=1 %}",
                 dataType: 'json'
+            }).fail(function () {
+                $('#modal').modal('toggle');
+                const content = document.getElementById('modalContent');
+                content.innerHTML = "Error";
+                const label = document.getElementById('modalLabel');
+                label.innerHTML = "Error";
+            });
+        }
+
+        function sendBuildQuery() {
+            window.event.cancelBubble = true;
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:package_build' %}",
+                data: {"name": "{{ package.name }}"},
+                dataType: 'json'
+            }).then(function () {
+                window.location.reload(true);
+            }).fail(function (e) {
+                $('#modal').modal('toggle');
+                const content = document.getElementById('modalContent');
+                content.innerHTML = e.responseText;
+                const label = document.getElementById('modalLabel');
+                label.innerHTML = "Error";
             });
         }
     </script>
