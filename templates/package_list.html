@@ -72,7 +72,7 @@
                 url: "{% url 'manager:build_all' %}",
                 dataType: 'json'
             }).then(function () {
-                window.location = {% url 'manager:package_list' %};
+                window.location.reload(true);
             });
         }
 
@@ -84,7 +84,7 @@
                 dataType: 'json'
             }).then(function () {
                 $('#modal').modal('toggle');
-                window.location = {% url 'manager:package_list' %};
+                window.location.reload(true);
             }).fail(function (e) {
                 const content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
@@ -99,7 +99,7 @@
                 data: {"name": name},
                 dataType: 'json'
             }).then(function () {
-                window.location = {% url 'manager:package_list' %};
+                window.location.reload(true);
             }).fail(function (e) {
                 $('#modal').modal('toggle');
                 const content = document.getElementById('modalContent');
