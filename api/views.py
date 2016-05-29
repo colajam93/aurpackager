@@ -3,117 +3,93 @@ from django.template import RequestContext, Template
 import json
 import lib.aur.query as query
 import manager.operation as operation
+import functools
 
 
-def package_search(request):
-    if request.method == 'POST':
-        method = request.POST
+def make_api(require=None, optional=None, error_check=False, status=400):
+    if optional is None:
+        optional = []
+    if require is None:
+        require = []
+
+    def decorator(function):
+        @functools.wraps(function)
+        def wrapper(request):
+            if request.method == 'POST':
+                params = request.POST
+            else:
+                params = request.GET
+            for key in require:
+                if key not in params or not params[key]:
+                    return HttpResponse(status=status)
+            option_dict = dict()
+            for key in optional:
+                if key in params:
+                    option_dict[key] = params[key]
+            result = function(params, **option_dict)
+            c = RequestContext(request, {'result': json.dumps(result)})
+            t = Template('{{result | safe}}')
+            response = HttpResponse(t.render(c), content_type='application/json')
+            if error_check:
+                if not result['result']:
+                    response.status_code = status
+            return response
+
+        return wrapper
+
+    return decorator
+
+
+@make_api(require=['name'])
+def package_search(params):
+    return query.search(params['name'])
+
+
+@make_api(require=['name'])
+def package_info(params):
+    return query.info(params['name'])
+
+
+@make_api(require=['name'], optional=['depend'], error_check=True)
+def package_register(params, **kwargs):
+    with_depend = kwargs['depend'] == 'true'
+    ret = dict()
+    try:
+        r = operation.register(params['name'], with_depend=with_depend)
+    except operation.OperationError as e:
+        ret['result'] = False
+        ret['detail'] = str(e)
     else:
-        method = request.GET
+        ret.update(r)
+        ret['result'] = True
+        ret['name'] = params['name']
+    return ret
 
-    if 'name' not in method or not method['name']:
-        return HttpResponse(status=400)
+
+@make_api(require=['name'], optional=['cleanup'], error_check=True)
+def package_remove(params, **kwargs):
+    cleanup = kwargs['cleanup'] == 'true'
+    ret = dict()
+    try:
+        operation.remove(params['name'], cleanup=cleanup)
+    except operation.OperationError as e:
+        ret['result'] = False
+        ret['detail'] = str(e)
     else:
-        result = query.search(method['name'])
-        c = RequestContext(request, {'result': json.dumps(result)})
-        t = Template('{{result | safe}}')
-        return HttpResponse(t.render(c), content_type='application/json')
+        ret['result'] = True
+        ret['name'] = params['name']
+    return ret
 
 
-def package_info(request):
-    if request.method == 'POST':
-        method = request.POST
+@make_api(require=['name'], error_check=True)
+def package_build(params):
+    ret = dict()
+    try:
+        operation.build(params['name'])
+    except operation.OperationError as e:
+        ret['result'] = False
+        ret['detail'] = str(e)
     else:
-        method = request.GET
-
-    if 'name' not in method or not method['name']:
-        return HttpResponse(status=400)
-    else:
-        result = query.info(method['name'])
-        c = RequestContext(request, {'result': json.dumps(result)})
-        t = Template('{{result | safe}}')
-        return HttpResponse(t.render(c), content_type='application/json')
-
-
-def package_register(request):
-    if request.method == 'POST':
-        method = request.POST
-    else:
-        method = request.GET
-
-    if 'name' not in method or not method['name']:
-        return HttpResponse(status=400)
-    else:
-        with_depend = 'depend' in method and method['depend'] == 'true'
-        ret = dict()
-        try:
-            r = operation.register(method['name'], with_depend=with_depend)
-        except operation.OperationError as e:
-            ret['result'] = False
-            ret['detail'] = str(e)
-        else:
-            ret.update(r)
-            ret['name'] = method['name']
-            ret['result'] = True
-
-        c = RequestContext(request, {'result': json.dumps(ret)})
-        t = Template('{{result | safe}}')
-        response = HttpResponse(t.render(c), content_type='application/json')
-        if not ret['result']:
-            response.status_code = 400
-        return response
-
-
-def package_remove(request):
-    if request.method == 'POST':
-        method = request.POST
-    else:
-        method = request.GET
-
-    if 'name' not in method or not method['name']:
-        return HttpResponse(status=400)
-    else:
-        cleanup = 'cleanup' in method and method['cleanup'] == 'true'
-        ret = dict()
-        try:
-            operation.remove(method['name'], cleanup=cleanup)
-        except operation.OperationError as e:
-            ret['result'] = False
-            ret['detail'] = str(e)
-        else:
-            ret['name'] = method['name']
-            ret['result'] = True
-
-        c = RequestContext(request, {'result': json.dumps(ret)})
-        t = Template('{{result | safe}}')
-        response = HttpResponse(t.render(c), content_type='application/json')
-        if not ret['result']:
-            response.status_code = 400
-        return response
-
-
-def package_build(request):
-    if request.method == 'POST':
-        method = request.POST
-    else:
-        method = request.GET
-
-    if 'name' not in method or not method['name']:
-        return HttpResponse(status=400)
-    else:
-        ret = dict()
-        try:
-            operation.build(method['name'])
-        except operation.OperationError as e:
-            ret['result'] = False
-            ret['detail'] = str(e)
-        else:
-            ret['name'] = method['name']
-            ret['result'] = True
-
-        c = RequestContext(request, {'result': json.dumps(ret)})
-        t = Template('{{result | safe}}')
-        response = HttpResponse(t.render(c), content_type='application/json')
-        if not ret['result']:
-            response.status_code = 400
-        return response
+        ret['result'] = True
+        ret['name'] = params['name']
+    return ret
