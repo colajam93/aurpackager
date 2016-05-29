@@ -3,48 +3,50 @@
 {% block title %}Package List{% endblock title %}
 
 {% block nav %}
-    <li class="nav-item active">
-        <a class="nav-link" href="#">List</a>
-    </li>
+    <form action="javascript:void(0)" class="form-inline pull-xs-right">
+        <button onclick="sendBuildAllQuery()" class="btn btn-primary-outline">Build All</button>
+    </form>
 {% endblock nav %}
 
 {% block content %}
-    <p>
-        <button type="button" class="btn btn-primary" onclick="window.location='{% url 'manager:package_register' %}' ">
-            Register
-        </button>
-        <a onclick="sendBuildAllQuery()" class="btn btn-success">Build All</a>
-    </p>
-    <table class="table table-striped table-bordered table-hover">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Build Status</th>
-            <th>Operation</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for package in packages %}
-            <tr data-href="{% url 'manager:package_detail' package_name=package.name %}" class="clickable-pointer">
-                <td>{{ package.name }}</td>
-                <td>{{ package.status }}</td>
-                <td>
-                    <button type="submit" class="btn btn-primary" onclick="openRemoveModal('{{ package.name }}')">
-                        Remove
-                    </button>
-                    <button type="submit" class="btn btn-primary" onclick="sendBuildQuery('{{ package.name }}')">
-                        Build
-                    </button>
-                    <a class="btn btn-primary"
-                       href="{% url 'manager:build_download' package_name=package.name build_number=1 %}"
-                       onclick="window.event.cancelBubble = true;"
-                       download>Download
-                    </a>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-xs-12">
+            <h3>Package List</h3>
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Build Status</th>
+                    <th>Operation</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for package in packages %}
+                    <tr data-href="{% url 'manager:package_detail' package_name=package.name %}"
+                        class="clickable-pointer">
+                        <td>{{ package.name }}</td>
+                        <td>{{ package.status }}</td>
+                        <td>
+                            <button type="submit" class="btn btn-primary"
+                                    onclick="openRemoveModal('{{ package.name }}')">
+                                Remove
+                            </button>
+                            <button type="submit" class="btn btn-primary"
+                                    onclick="sendBuildQuery('{{ package.name }}')">
+                                Build
+                            </button>
+                            <a class="btn btn-primary"
+                               href="{% url 'manager:build_download' package_name=package.name build_number=1 %}"
+                               onclick="window.event.cancelBubble = true;"
+                               download>Download
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">

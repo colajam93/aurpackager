@@ -2,7 +2,7 @@
 
 {% block title %}Build Detail{% endblock title %}
 
-{% block nav %}
+{% block content %}
     <li class="nav-item">
         <a class="nav-link" href="{% url 'manager:package_list' %}">List</a>
     </li>
@@ -12,9 +12,6 @@
     <li class="nav-item active">
         <a class="nav-link" href="#">{{ build.number }}</a>
     </li>
-{% endblock nav %}
-
-{% block content %}
     {% if is_success %}
         <p>
             <a href="{% url 'manager:build_download' package_name=package.name build_number=build.number %} "

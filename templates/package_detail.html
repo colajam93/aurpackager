@@ -2,16 +2,9 @@
 
 {% block title %}Package Detail{% endblock title %}
 
-{% block nav %}
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'manager:package_list' %}">List</a>
-    </li>
-    <li class="nav-item active">
-        <a class="nav-link" href="#">{{ package.name }}</a>
-    </li>
-{% endblock nav %}
 
 {% block content %}
+    <h3>Package Detail</h3>
     <p>
         <a onclick="sendQuery()" class="btn btn-success">Build</a>
         <a href="{% url 'manager:build_download' package_name=package.name build_number=1 %}"

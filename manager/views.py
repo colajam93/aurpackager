@@ -16,7 +16,7 @@ def package_list(request):
         else:
             setattr(package, 'status', 'None')
 
-    return render(request, 'package_list.html', {'packages': packages})
+    return render(request, 'package_list.html', {'packages': packages, 'active': 'list'})
 
 
 def package_detail(request, package_name):
@@ -24,7 +24,7 @@ def package_detail(request, package_name):
     builds = Build.objects.filter(package_id=package.id).order_by('-date')
     for build, number in zip(builds, range(1, len(builds) + 1)):
         build.number = number
-    return render(request, 'package_detail.html', {'package': package, 'builds': builds})
+    return render(request, 'package_detail.html', {'package': package, 'builds': builds, 'active': 'list'})
 
 
 def package_build(request, package_name):
@@ -37,11 +37,11 @@ def package_build(request, package_name):
 
 
 def package_register(request):
-    return render(request, 'package_register.html')
+    return render(request, 'package_register.html', {'active': 'register'})
 
 
 def package_register_detail(request, package_name):
-    return render(request, 'package_register_detail.html', {'package_name': package_name})
+    return render(request, 'package_register_detail.html', {'package_name': package_name, 'active': 'register'})
 
 
 def build_detail(request, package_name, build_number):
@@ -61,7 +61,7 @@ def build_detail(request, package_name, build_number):
     if build:
         is_success = build.status == Build.SUCCESS
         return render(request, 'build_detail.html',
-                      {'build': build, 'package': build.package, 'log': log, 'is_success': is_success})
+                      {'build': build, 'package': build.package, 'log': log, 'is_success': is_success, 'active': 'list'})
     else:
         return redirect('manager:package_list')
 
