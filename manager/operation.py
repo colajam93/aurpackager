@@ -5,6 +5,7 @@ import itertools
 import shutil
 import os.path
 from packager.settings import BUILD_ROOT_DIR
+from packager.manager import BuilderManager
 
 
 class OperationError(Exception):
@@ -69,3 +70,11 @@ def remove(name, cleanup=False):
 
     package = Package.objects.get(name=name)
     package.delete()
+
+
+def build(name):
+    if not _is_registered(name):
+        raise OperationError('{} has not installed'.format(name))
+
+    package = Package.objects.get(name=name)
+    BuilderManager().register(package.id)

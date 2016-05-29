@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^info/$', views.package_info, name='package_info'),
     url(r'^register/$', views.package_register, name='package_register'),
     url(r'^remove/$', views.package_remove, name='package_remove'),
+    url(r'^build/$', views.package_build, name='package_build'),
 ]

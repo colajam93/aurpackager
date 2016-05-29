@@ -90,3 +90,30 @@ def package_remove(request):
         if not ret['result']:
             response.status_code = 400
         return response
+
+
+def package_build(request):
+    if request.method == 'POST':
+        method = request.POST
+    else:
+        method = request.GET
+
+    if 'name' not in method or not method['name']:
+        return HttpResponse(status=400)
+    else:
+        ret = dict()
+        try:
+            operation.build(method['name'])
+        except operation.OperationError as e:
+            ret['result'] = False
+            ret['detail'] = str(e)
+        else:
+            ret['name'] = method['name']
+            ret['result'] = True
+
+        c = RequestContext(request, {'result': json.dumps(ret)})
+        t = Template('{{result | safe}}')
+        response = HttpResponse(t.render(c), content_type='application/json')
+        if not ret['result']:
+            response.status_code = 400
+        return response
