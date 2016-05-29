@@ -2,25 +2,28 @@
 
 ## Description
 
-Auto AUR package builder with web interface using Django.
+This application provides AUR package building on your server through web interface.
+You can share AUR packages in all your machines through http.
+
+## Requirement
+
+- Arch Linux
 
 ## Install
 
 - Create virtual environment
 
-This application require no password sudo to install depending packages.
+This application require no password sudo to install dependencies.
 So you should run in VM or container.
 
 - Create build user
-
-Execute following command as `root`.
 
 ```
 # useradd -m -s /bin/bash packager
 # echo 'packager ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 ```
 
-- Install depends
+- Install dependencies
 
 ```
 # pacman -S --needed base-devel python python-pip python-virtualenv bower git
@@ -28,16 +31,13 @@ Execute following command as `root`.
 
 - Prepare files
 
-Execute following command as `packager`.
-
 ```
-$ git clone URL
-$ cd repository
+$ git clone https://github.com/colajam93/aurpackager
+$ cd aurpackager
 $ virtualenv venv
 $ source venv/bin/activate
 $ ./install_dependencies.sh
 $ ./manage.py migrate
-$ ./manage.py createsuperuser
 ```
 
 - Run server
@@ -48,22 +48,15 @@ Run development server or deploy to WSGI environment.
 $ ./manage.py runserver
 ```
 
-## Add Package
-
-1. Click 'Register' button.
-2. Search with package name and select one from list.
-3. Check detail and click 'Register' button.
-If 'with dependencies' is enabled, dependency packages will be installed(official packages) and registered(AUR packages).
-
 ## TODO
 
 - Authentication
 - Error handling
 - Auto update check
 - Notification
-- Remove package without admin page.
 - Refactor
-- Apply Bootstrap' grid system
+- Execute `pacman -Syu`
+- File hash value
 
 ## License
 
