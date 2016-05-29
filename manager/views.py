@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from manager.models import Package, Build
-from packager.manager import BuilderManager
 from django.http import HttpResponse
 import json
 import os.path
@@ -25,15 +24,6 @@ def package_detail(request, package_name):
     for build, number in zip(builds, range(1, len(builds) + 1)):
         build.number = number
     return render(request, 'package_detail.html', {'package': package, 'builds': builds, 'active': 'list'})
-
-
-def package_build(request, package_name):
-    package = Package.objects.get(name=package_name)
-    if package:
-        BuilderManager().register(package.id)
-        return HttpResponse(json.dumps({'result': True}), content_type='application/javascript')
-    else:
-        return HttpResponse(json.dumps({'result': False}), content_type='application/javascript')
 
 
 def package_register(request):
