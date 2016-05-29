@@ -28,10 +28,6 @@
                         <td>{{ package.status }}</td>
                         <td>
                             <button type="submit" class="btn btn-primary"
-                                    onclick="openRemoveModal('{{ package.name }}')">
-                                Remove
-                            </button>
-                            <button type="submit" class="btn btn-primary"
                                     onclick="sendBuildQuery('{{ package.name }}')">
                                 Build
                             </button>
@@ -40,6 +36,10 @@
                                onclick="window.event.cancelBubble = true;"
                                download>Download
                             </a>
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="openRemoveModal('{{ package.name }}')">
+                                Remove
+                            </button>
                         </td>
                     </tr>
                 {% endfor %}
@@ -116,13 +116,20 @@
 
             const content = document.getElementById('modalContent');
             content.innerHTML =
-                    `<form class="form-inline" action="javascript:void(0)">
+                    `<div class="row">
+                    <div class="col-xs-12">
+                    Remove ` + name + `?
+                    </div></div>
+                    <div class="row">
+                    <div class="col-xs-12">
+                    <form class="form-inline" action="javascript:void(0)">
                     <fieldset class="form-group">
-                    <button type="submit" class="btn btn-primary" id="sendRemoveQueryButton">Remove</button>
-                    <label for="cleanup">cleanup</label>
+                    <button type="submit" class="btn btn-danger" id="sendRemoveQueryButton">Remove</button>
+                    <label for="cleanup">Remove build result completely</label>
                     <input type="checkbox" id="cleanup" checked>
                     </fieldset>
-                    </form>`;
+                    </form>
+                    </div></div>`;
             const button = document.getElementById('sendRemoveQueryButton');
             button.onclick = function () {
                 sendRemoveQuery(name);
