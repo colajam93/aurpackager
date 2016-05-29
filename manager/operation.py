@@ -65,7 +65,7 @@ def remove(name, cleanup=False):
         raise OperationError('{} has not installed'.format(name))
 
     if cleanup:
-        shutil.rmtree(os.path.join(BUILD_ROOT_DIR, name))
+        shutil.rmtree(os.path.join(BUILD_ROOT_DIR, name), ignore_errors=True)
 
     package = Package.objects.get(name=name)
     package.delete()
