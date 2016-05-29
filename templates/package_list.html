@@ -13,7 +13,7 @@
         <button type="button" class="btn btn-primary" onclick="window.location='{% url 'manager:package_register' %}' ">
             Register
         </button>
-        <a onclick="sendQuery()" class="btn btn-success">Build All</a>
+        <a onclick="sendBuildAllQuery()" class="btn btn-success">Build All</a>
     </p>
     <table class="table table-striped table-bordered table-hover">
         <thead>
@@ -60,10 +60,12 @@
     </div>
 
     <script type="application/javascript">
-        function sendQuery() {
+        function sendBuildAllQuery() {
             $.ajax({
                 url: "{% url 'manager:build_all' %}",
                 dataType: 'json'
+            }).then(function () {
+                window.location = {% url 'manager:package_list' %};
             });
         }
 
