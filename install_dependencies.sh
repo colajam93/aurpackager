@@ -18,6 +18,7 @@ install -d $js_dir
 
 # install booststrap
 install -m644 $bower_dir/bootstrap/dist/css/bootstrap.min.css $css_dir
+install -m644 $bower_dir/bootstrap/dist/css/bootstrap.min.css.map $css_dir
 install -m644 $bower_dir/bootstrap/dist/js/bootstrap.min.js $js_dir
 
 # install jquery
