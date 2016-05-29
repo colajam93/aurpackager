@@ -9,6 +9,13 @@ from django.core.files import File
 
 def package_list(request):
     packages = Package.objects.all().order_by('id')
+    for package in packages:
+        builds = Build.objects.filter(package_id=package.id).order_by('-date')
+        if len(builds) >= 1:
+            setattr(package, 'status', builds[0].status)
+        else:
+            setattr(package, 'status', 'None')
+
     return render(request, 'package_list.html', {'packages': packages})
 
 
