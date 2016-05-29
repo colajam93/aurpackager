@@ -1,17 +1,25 @@
 {% extends "base.html" %}
 
-{% block title %}Package Register{% endblock title %}
+{% block title %}Register{% endblock title %}
 
 {% block content %}
-    <h3>Package Register</h3>
-    <form class="form-inline" action="javascript:void(0)">
-        <fieldset class="form-group">
-            <label for="packageName">Package Name</label>
-            <input type="text" class="form-control" id="packageName" placeholder="Package name" required>
-            <button type="submit" class="btn btn-primary" onclick="sendQuery()">Search</button>
-        </fieldset>
-    </form>
-    <div id="resultTable">
+    <h3>Register</h3>
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-inline" action="javascript:void(0)">
+                <fieldset class="form-group">
+                    <label for="packageName">Package Name</label>
+                    <input type="text" class="form-control" id="packageName" placeholder="Package name" required>
+                    <button type="submit" class="btn btn-primary" onclick="sendQuery()">Search</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div id="resultTable">
+            </div>
+        </div>
     </div>
     <script type="application/javascript">
         function sendQuery() {
