@@ -6,6 +6,7 @@ from lib.singleton import Singleton
 from manager.models import Build
 import django.utils.timezone as timezone
 import packager.path
+import lib.digest as digest
 
 
 class BuilderManager(metaclass=Singleton):
@@ -38,11 +39,12 @@ class BuilderManager(metaclass=Singleton):
                 build.version = builder.version
             if not build.status == build.FAILURE:
                 try:
-                    _ = packager.path.build_to_path(build).result_file
+                    result_file = packager.path.build_to_path(build).result_file
                 except FileNotFoundError:
                     build.status = Build.FAILURE
                 else:
                     build.status = Build.SUCCESS
+                    build.sha256 = digest.sha256(result_file)
             build.save()
 
             with self.lock:
