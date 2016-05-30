@@ -1,8 +1,14 @@
 import os.path
+from packager.settings import BUILD_ROOT_DIR
 
 
+# path structure:
+# build_dir = [BUILD_ROOT_DIR]/[package_name]/[version]/[date]
+# script_file = [build_dir]/_build_script.sh
+# dest = [build_dir]/[package].pkg.tar.xz,build.log
+# work_dir = [build_dir]/[package_name]/PKGBUILD,etc.
 class Path:
-    def __init__(self, base, name, version, date):
+    def __init__(self, name, version, date, base=BUILD_ROOT_DIR):
         build_dir = os.path.join(base, name, version, date)
         self.name = name
         self.build_dir = build_dir.translate(str.maketrans(':', '_'))
@@ -30,5 +36,5 @@ class Path:
         return os.path.join(self.build_dir, '_build_script.sh')
 
 
-def get_path(base, build):
-    return Path(base, build.package.name, build.version, build.date.isoformat())
+def build_to_path(build, base=BUILD_ROOT_DIR):
+    return Path(build.package.name, build.version, build.date.isoformat(), base=base)
