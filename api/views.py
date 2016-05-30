@@ -122,3 +122,8 @@ def package_install(params):
 @make_api()
 def system_upgrade(_):
     sync.system_upgrade()
+
+
+@make_api()
+def install_all(_):
+    operation.install_all()

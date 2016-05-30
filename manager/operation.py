@@ -126,3 +126,20 @@ def install(name):
             raise OperationError from e
     else:
         raise OperationError('{} latest build has not succeeded'.format(name))
+
+
+def install_all():
+    files = []
+    for package in Package.objects.all():
+        try:
+            latest = Build.objects.filter(package_id=package.id).order_by('-id')[0]
+        except IndexError:
+            pass
+        else:
+            if latest.status == Build.SUCCESS:
+                try:
+                    path = packager.path.build_to_path(latest)
+                    files.append(path)
+                except FileNotFoundError:
+                    pass
+    upgrade.install(' '.join(files))

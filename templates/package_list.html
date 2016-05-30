@@ -6,6 +6,7 @@
     <form action="javascript:void(0)" class="form-inline pull-xs-right">
         <button onclick="sendSystemUpgradeQuery()" class="btn btn-primary-outline">System Upgrade</button>
         <button onclick="sendBuildUpdateQuery()" class="btn btn-primary-outline">Build Update</button>
+        <button onclick="sendInstallAllQuery()" class="btn btn-primary-outline">Install All</button>
         <button onclick="sendBuildAllQuery()" class="btn btn-primary-outline">Build All</button>
     </form>
 {% endblock nav %}
@@ -86,6 +87,13 @@
                 dataType: 'json'
             }).then(function () {
                 window.location.reload(true);
+            });
+        }
+
+        function sendInstallAllQuery() {
+            $.ajax({
+                url: "{% url 'api:package_install_all' %}",
+                dataType: 'json'
             });
         }
 
