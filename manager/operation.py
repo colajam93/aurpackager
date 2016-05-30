@@ -139,7 +139,7 @@ def install_all():
             if latest.status == Build.SUCCESS:
                 try:
                     path = packager.path.build_to_path(latest)
-                    files.append(path)
+                    files.append(path.result_file)
                 except FileNotFoundError:
                     pass
     upgrade.install(' '.join(files))
