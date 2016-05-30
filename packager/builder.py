@@ -14,9 +14,7 @@ class BuilderError(Exception):
 class Builder:
     def __init__(self, package_id):
         self.package = Package.objects.get(id=package_id)
-        self.log_path = ''
         self.version = ''
-        self.result_path = ''
 
     @property
     def package_name(self):
@@ -61,6 +59,3 @@ makepkg -s --noconfirm
             f.write(json.dumps(info, indent=4))
             f.write('\n')
             f.write(completed.stdout)
-
-        self.log_path = path.log_file
-        self.result_path = path.result_file

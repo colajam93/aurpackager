@@ -36,8 +36,6 @@ class BuilderManager(metaclass=Singleton):
             else:
                 build.status = Build.SUCCESS
             build.version = builder.version
-            build.result_path = builder.result_path
-            build.log_path = builder.log_path
             build.save()
             with self.lock:
                 self.building_packages.remove(builder.package_name)

@@ -14,8 +14,6 @@ class Build(models.Model):
     package = models.ForeignKey(Package, default='')
     version = models.CharField(max_length=FIELD_LENGTH, default='')
     date = models.DateTimeField()
-    result_path = models.CharField(max_length=FIELD_LENGTH, default='')
-    log_path = models.CharField(max_length=FIELD_LENGTH, default='')
     BUILDING = 'BUILDING'
     SUCCESS = 'SUCCESS'
     FAILURE = 'FAILURE'

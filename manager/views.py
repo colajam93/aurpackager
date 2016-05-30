@@ -4,6 +4,7 @@ from django.http import HttpResponse
 import json
 import os.path
 from django.core.files import File
+import packager.path
 
 
 def package_list(request):
@@ -40,21 +41,19 @@ def build_detail(request, package_name, build_number):
         build = Build.objects.filter(package_id=package.id).order_by('-date')[int(build_number) - 1]
         build.number = build_number
     except IndexError:
-        build = None
+        return redirect('manager:package_list')
+    path = packager.path.build_to_path(build)
     log = ''
     if not build.status == Build.BUILDING:
         try:
-            with open(build.log_path, 'r') as f:
+            with open(path.log_file, 'r') as f:
                 log = f.read()
         except FileNotFoundError:
             pass
-    if build:
-        is_success = build.status == Build.SUCCESS
-        return render(request, 'build_detail.html',
-                      {'build': build, 'package': build.package, 'log': log, 'is_success': is_success,
-                       'active': 'list'})
-    else:
-        return redirect('manager:package_list')
+    is_success = build.status == Build.SUCCESS
+    return render(request, 'build_detail.html',
+                  {'build': build, 'package': build.package, 'log': log, 'is_success': is_success,
+                   'active': 'list'})
 
 
 def build_download(request, package_name, build_number):
@@ -64,10 +63,12 @@ def build_download(request, package_name, build_number):
     except IndexError:
         build = None
     if build and build.status == Build.SUCCESS:
-        with open(build.result_path, 'rb') as f:
+        path = packager.path.build_to_path(build)
+        result_file = path.result_file
+        with open(result_file, 'rb') as f:
             ff = File(f)
             response = HttpResponse(ff, content_type='application/x-xz')
-            response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(build.result_path))
+            response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(result_file))
             response['Content-Length'] = ff.size
             return response
     else:
