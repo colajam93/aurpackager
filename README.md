@@ -50,13 +50,11 @@ $ ./manage.py runserver
 
 ## TODO
 
-- Authentication
-- Error handling
 - Auto update check
 - Notification
-- Refactor
-- Execute `pacman -Syu`
+- Refactor(Builder with coroutine?)
 - File hash value
+- Package filter
 
 ## License
 
