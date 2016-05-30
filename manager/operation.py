@@ -8,7 +8,6 @@ import os.path
 from packager.settings import BUILD_ROOT_DIR
 from packager.manager import BuilderManager
 import packager.path
-import threading
 
 
 class OperationError(Exception):
@@ -96,20 +95,17 @@ def build_update():
     packages = Package.objects.all()
     sync.system_upgrade()
     for package in packages:
-        def work():
-            try:
-                latest = Build.objects.filter(package_id=package.id).order_by('-id')[0]
-            except IndexError:
+        try:
+            latest = Build.objects.filter(package_id=package.id).order_by('-id')[0]
+        except IndexError:
+            BuilderManager().register(package.id)
+        else:
+            if latest.status == Build.FAILURE:
                 BuilderManager().register(package.id)
-            else:
-                if latest.status == Build.FAILURE:
+            elif latest.status == Build.SUCCESS:
+                info = aur.info(package.name)
+                if not info.Version == latest.version:
                     BuilderManager().register(package.id)
-                elif latest.status == Build.SUCCESS:
-                    info = aur.info(package.name)
-                    if not info.Version == latest.version:
-                        BuilderManager().register(package.id)
-
-        threading.Thread(target=work).start()
 
 
 def install(name):
