@@ -71,12 +71,14 @@
     <script type="application/javascript">
         function sendInstallQuery() {
             $.ajax({
-                url: "{% url 'manager:build_install' package_name=package.name build_number=1 %}",
+                type: 'POST',
+                url: "{% url 'api:package_install' %}",
+                data: {"name": "{{ package.name }}"},
                 dataType: 'json'
-            }).fail(function () {
+            }).fail(function (e) {
                 $('#modal').modal('toggle');
                 const content = document.getElementById('modalContent');
-                content.innerHTML = "Error";
+                content.innerHTML = e.responseText;
                 const label = document.getElementById('modalLabel');
                 label.innerHTML = "Error";
             });

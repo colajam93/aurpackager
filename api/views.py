@@ -98,3 +98,17 @@ def package_build(params):
 @make_api()
 def package_build_all(_):
     operation.build_all()
+
+
+@make_api(require=['name'], error_check=True, status=404)
+def package_install(params):
+    ret = dict()
+    try:
+        operation.install(params['name'])
+    except operation.OperationError as e:
+        ret['result'] = False
+        ret['detail'] = str(e)
+    else:
+        ret['result'] = True
+        ret['name'] = params['name']
+    return ret

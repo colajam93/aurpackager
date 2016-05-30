@@ -14,6 +14,4 @@ urlpatterns = [
         name='build_detail'),
     url(r'^packages/(?P<package_name>[a-zA-Z0-9_+-]+)/(?P<build_number>\d+)/download/$', views.build_download,
         name='build_download'),
-    url(r'^packages/(?P<package_name>[a-zA-Z0-9_+-]+)/(?P<build_number>\d+)/install/$', views.build_install,
-        name='build_install')
 ]

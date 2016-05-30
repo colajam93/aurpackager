@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^remove/$', views.package_remove, name='package_remove'),
     url(r'^build/$', views.package_build, name='package_build'),
     url(r'^build_all/$', views.package_build_all, name='package_build_all'),
+    url(r'^install/$', views.package_install, name='package_install'),
 ]

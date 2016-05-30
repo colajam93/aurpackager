@@ -1,11 +1,13 @@
-from manager.models import Package
+from manager.models import Package, Build
 import lib.aur as aur
 import lib.pacman.sync as sync
+import lib.pacman.upgrade as upgrade
 import itertools
 import shutil
 import os.path
 from packager.settings import BUILD_ROOT_DIR
 from packager.manager import BuilderManager
+import packager.path
 
 
 class OperationError(Exception):
@@ -27,7 +29,7 @@ def _is_registered(name):
 
 def register(name, with_depend=False):
     if _is_registered(name):
-        raise OperationError('{} has already installed'.format(name))
+        raise OperationError('{} has already registered'.format(name))
 
     info = aur.info(name)
     native = []
@@ -63,7 +65,7 @@ def register(name, with_depend=False):
 
 def remove(name, cleanup=False):
     if not _is_registered(name):
-        raise OperationError('{} has not installed'.format(name))
+        raise OperationError('{} has not registered'.format(name))
 
     if cleanup:
         shutil.rmtree(os.path.join(BUILD_ROOT_DIR, name), ignore_errors=True)
@@ -74,7 +76,7 @@ def remove(name, cleanup=False):
 
 def build(name):
     if not _is_registered(name):
-        raise OperationError('{} has not installed'.format(name))
+        raise OperationError('{} has not registered'.format(name))
 
     package = Package.objects.get(name=name)
     BuilderManager().register(package.id)
@@ -84,3 +86,22 @@ def build_all():
     packages = Package.objects.all()
     for package in packages:
         BuilderManager().register(package.id)
+
+
+def install(name):
+    if not _is_registered(name):
+        raise OperationError('{} has not registered'.format(name))
+
+    package = Package.objects.get(name=name)
+    try:
+        build = Build.objects.filter(package_id=package.id).order_by('-id')[0]
+    except IndexError:
+        raise OperationError('{} has no build'.format(name))
+    if build.status == Build.SUCCESS:
+        try:
+            path = packager.path.build_to_path(build)
+            upgrade.install(path.result_file)
+        except FileNotFoundError as e:
+            raise OperationError from e
+    else:
+        raise OperationError('{} latest build has not succeeded'.format(name))
