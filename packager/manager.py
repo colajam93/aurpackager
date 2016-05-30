@@ -5,6 +5,7 @@ import time
 from lib.singleton import Singleton
 from manager.models import Build
 import django.utils.timezone as timezone
+import packager.path
 
 
 class BuilderManager(metaclass=Singleton):
@@ -33,10 +34,17 @@ class BuilderManager(metaclass=Singleton):
                 builder.build(date)
             except (BuilderError, PermissionError):
                 build.status = Build.FAILURE
-            else:
-                build.status = Build.SUCCESS
-            build.version = builder.version
+            finally:
+                build.version = builder.version
+            if not build.status == build.FAILURE:
+                try:
+                    _ = packager.path.build_to_path(build).result_file
+                except FileNotFoundError:
+                    build.status = Build.FAILURE
+                else:
+                    build.status = Build.SUCCESS
             build.save()
+
             with self.lock:
                 self.building_packages.remove(builder.package_name)
 
