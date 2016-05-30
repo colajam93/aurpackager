@@ -48,6 +48,7 @@ def register(name, with_depend=False):
                 foreign.append(depend_name)
             else:
                 raise OperationError('{} not found'.format(depend_name))
+        sync.system_upgrade()
         sync.install(native, asdeps=True)
         for package in foreign:
             if not _is_registered(package):
@@ -79,11 +80,13 @@ def build(name):
         raise OperationError('{} has not registered'.format(name))
 
     package = Package.objects.get(name=name)
+    sync.system_upgrade()
     BuilderManager().register(package.id)
 
 
 def build_all():
     packages = Package.objects.all()
+    sync.system_upgrade()
     for package in packages:
         BuilderManager().register(package.id)
 
@@ -100,6 +103,7 @@ def install(name):
     if build_.status == Build.SUCCESS:
         try:
             path = packager.path.build_to_path(build_)
+            sync.system_upgrade()
             upgrade.install(path.result_file)
         except FileNotFoundError as e:
             raise OperationError from e
