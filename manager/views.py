@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from manager.models import Package, Build
 from django.http import HttpResponse
-import json
 import os.path
 from django.core.files import File
 import packager.path
