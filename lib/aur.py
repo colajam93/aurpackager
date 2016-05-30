@@ -29,7 +29,7 @@ class AURInfo(AttrDict):
         self.aur_url = AUR_URL + '/packages/{}'.format(self.Name)
 
 
-def __aur_query(url):
+def _aur_query(url):
     with closing(urlopen(url)) as request:
         result = json.loads(request.read().decode())
     return result
@@ -37,7 +37,7 @@ def __aur_query(url):
 
 def info(package):
     url = INFO_URL + 'arg[]={}'.format(package)
-    result = __aur_query(url)
+    result = _aur_query(url)
     if result['resultcount'] == 0:
         raise PackageNotFoundError
     return AURInfo(result['results'][0])
@@ -45,7 +45,7 @@ def info(package):
 
 def multiple_info(packages):
     url = INFO_URL + '&'.join(map(lambda x: 'arg[]={}'.format(x), packages))
-    result = __aur_query(url)
+    result = _aur_query(url)
 
     # dict which key is the package name
     ret = dict()
@@ -61,7 +61,7 @@ def multiple_info(packages):
 
 def search(package):
     url = SEARCH_URL + 'arg={}'.format(package)
-    result = __aur_query(url)
+    result = _aur_query(url)
     return [AURInfo(x) for x in result['results']]
 
 
