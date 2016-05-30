@@ -48,13 +48,21 @@ Run development server or deploy to WSGI environment.
 $ ./manage.py runserver
 ```
 
-## TODO
+## Automatic update checking
 
-- Auto update check
-- Notification
-- Refactor(Builder with coroutine?)
-- File hash value
-- Package filter
+Use `build_all` api.
+See `auto-update.py`.
+
+## Slack Notification
+
+Enable Incoming Webhooks and edit `packager/settings.py` as follows.
+
+```
+SLACK_NOTIFICATION = True
+SLACK_NOTIFICATION_URL = 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'  # REQUIRED FOR SLACK_NOTIFICATION
+AUR_PACKAGER_BASE_URL = 'https://aurpackager.yourdomain'  # REQUIRED FOR SLACK_NOTIFICATION
+```
+
 
 ## License
 
