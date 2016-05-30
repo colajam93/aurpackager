@@ -94,12 +94,12 @@ def install(name):
 
     package = Package.objects.get(name=name)
     try:
-        build = Build.objects.filter(package_id=package.id).order_by('-id')[0]
+        build_ = Build.objects.filter(package_id=package.id).order_by('-id')[0]
     except IndexError:
         raise OperationError('{} has no build'.format(name))
-    if build.status == Build.SUCCESS:
+    if build_.status == Build.SUCCESS:
         try:
-            path = packager.path.build_to_path(build)
+            path = packager.path.build_to_path(build_)
             upgrade.install(path.result_file)
         except FileNotFoundError as e:
             raise OperationError from e
