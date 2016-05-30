@@ -10,7 +10,7 @@ import packager.path
 def package_list(request):
     packages = Package.objects.all().order_by('id')
     for package in packages:
-        builds = Build.objects.filter(package_id=package.id).order_by('-date')
+        builds = Build.objects.filter(package_id=package.id).order_by('-id')
         if len(builds) >= 1:
             setattr(package, 'status', builds[0].status)
         else:
@@ -21,7 +21,7 @@ def package_list(request):
 
 def package_detail(request, package_name):
     package = Package.objects.get(name=package_name)
-    builds = Build.objects.filter(package_id=package.id).order_by('-date')
+    builds = Build.objects.filter(package_id=package.id).order_by('-id')
     for build, number in zip(builds, range(1, len(builds) + 1)):
         build.number = number
     return render(request, 'package_detail.html', {'package': package, 'builds': builds, 'active': 'list'})
@@ -38,7 +38,7 @@ def package_register_detail(request, package_name):
 def build_detail(request, package_name, build_number):
     package = Package.objects.get(name=package_name)
     try:
-        build = Build.objects.filter(package_id=package.id).order_by('-date')[int(build_number) - 1]
+        build = Build.objects.filter(package_id=package.id).order_by('-id')[int(build_number) - 1]
         build.number = build_number
     except IndexError:
         return redirect('manager:package_list')
@@ -59,7 +59,7 @@ def build_detail(request, package_name, build_number):
 def build_download(request, package_name, build_number):
     package = Package.objects.get(name=package_name)
     try:
-        build = Build.objects.filter(package_id=package.id).order_by('-date')[int(build_number) - 1]
+        build = Build.objects.filter(package_id=package.id).order_by('-id')[int(build_number) - 1]
     except IndexError:
         build = None
     if build and build.status == Build.SUCCESS:
@@ -78,7 +78,7 @@ def build_download(request, package_name, build_number):
 def build_install(request, package_name, build_number):
     package = Package.objects.get(name=package_name)
     try:
-        build = Build.objects.filter(package_id=package.id).order_by('-date')[int(build_number) - 1]
+        build = Build.objects.filter(package_id=package.id).order_by('-id')[int(build_number) - 1]
     except IndexError:
         build = None
     if build and build.status == Build.SUCCESS:
