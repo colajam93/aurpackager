@@ -91,6 +91,23 @@ def build_all():
         BuilderManager().register(package.id)
 
 
+def build_update():
+    packages = Package.objects.all()
+    sync.system_upgrade()
+    for package in packages:
+        try:
+            latest = Build.objects.filter(package_id=package.id).order_by('-id')[0]
+        except IndexError:
+            BuilderManager().register(package.id)
+        else:
+            if latest.status == Build.FAILURE:
+                BuilderManager().register(package.id)
+            elif latest.status == Build.SUCCESS:
+                info = aur.info(package.name)
+                if not info.Version == latest.version:
+                    BuilderManager().register(package.id)
+
+
 def install(name):
     if not _is_registered(name):
         raise OperationError('{} has not registered'.format(name))

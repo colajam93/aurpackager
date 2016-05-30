@@ -96,9 +96,13 @@ def package_build(params):
     return ret
 
 
-@make_api()
-def package_build_all(_):
-    operation.build_all()
+@make_api(optional=['only_update'])
+def package_build_all(_, **kwargs):
+    only_update = 'only_update' in kwargs and kwargs['only_update'] == 'true'
+    if only_update:
+        operation.build_update()
+    else:
+        operation.build_all()
 
 
 @make_api(require=['name'], error_check=True, status=404)

@@ -5,6 +5,7 @@
 {% block nav %}
     <form action="javascript:void(0)" class="form-inline pull-xs-right">
         <button onclick="sendSystemUpgradeQuery()" class="btn btn-primary-outline">System Upgrade</button>
+        <button onclick="sendBuildUpdateQuery()" class="btn btn-primary-outline">Build Update</button>
         <button onclick="sendBuildAllQuery()" class="btn btn-primary-outline">Build All</button>
     </form>
 {% endblock nav %}
@@ -77,6 +78,16 @@
             });
         }
 
+        function sendBuildUpdateQuery() {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:package_build_all' %}",
+                data: {"only_update": true},
+                dataType: 'json'
+            }).then(function () {
+                window.location.reload(true);
+            });
+        }
 
         function sendSystemUpgradeQuery() {
             $.ajax({
