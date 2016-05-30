@@ -1,5 +1,5 @@
 from manager.models import Package
-import lib.aur.query as query
+import lib.aur as aur
 import lib.pacman.sync as sync
 import itertools
 import shutil
@@ -29,7 +29,7 @@ def register(name, with_depend=False):
     if _is_registered(name):
         raise OperationError('{} has already installed'.format(name))
 
-    info = query.info(name)
+    info = aur.info(name)
     native = []
     foreign = []
     if with_depend:
@@ -42,7 +42,7 @@ def register(name, with_depend=False):
             depend_name = depend.translate(str.maketrans('>=', '<<')).split('<')[0]
             if sync.exist(depend_name):
                 native.append(depend_name)
-            elif query.exist(depend_name):
+            elif aur.exist(depend_name):
                 foreign.append(depend_name)
             else:
                 raise OperationError('{} not found'.format(depend_name))

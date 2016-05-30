@@ -5,7 +5,7 @@ import json
 import os
 import subprocess
 import packager.path
-import lib.aur.query as aur
+import lib.aur as aur
 
 
 class BuilderError(Exception):

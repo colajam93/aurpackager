@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.template import RequestContext, Template
 import json
-import lib.aur.query as query
+import lib.aur as aur
 import manager.operation as operation
 import functools
 
@@ -42,12 +42,12 @@ def make_api(require=None, optional=None, error_check=False, status=400):
 
 @make_api(require=['name'])
 def package_search(params):
-    return query.search(params['name'])
+    return aur.search(params['name'])
 
 
 @make_api(require=['name'])
 def package_info(params):
-    return query.info(params['name'])
+    return aur.info(params['name'])
 
 
 @make_api(require=['name'], optional=['depend'], error_check=True)
