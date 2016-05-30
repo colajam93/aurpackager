@@ -26,4 +26,4 @@ class Build(models.Model):
     sha256 = models.CharField(max_length=FIELD_LENGTH, default='')
 
     def __str__(self):
-        return '{} {} {}'.format(self.package, self.version, self.date)
+        return '{} {} {} {}'.format(self.package, self.version, self.date, self.status)

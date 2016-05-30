@@ -7,6 +7,8 @@ from manager.models import Build
 import django.utils.timezone as timezone
 import packager.path
 import lib.digest as digest
+from packager.settings import SLACK_NOTIFICATION
+import packager.slack
 
 
 class BuilderManager(metaclass=Singleton):
@@ -46,6 +48,11 @@ class BuilderManager(metaclass=Singleton):
                     build.status = Build.SUCCESS
                     build.sha256 = digest.sha256(result_file)
             build.save()
+            if SLACK_NOTIFICATION:
+                try:
+                    packager.slack.post(build)
+                except:
+                    pass
 
             with self.lock:
                 self.building_packages.remove(builder.package_name)
