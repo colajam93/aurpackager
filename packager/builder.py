@@ -5,9 +5,7 @@ import json
 import os
 import subprocess
 import packager.path
-
-AUR_URL = 'https://aur.archlinux.org'
-RPC_URL = AUR_URL + '/rpc/?v=5&type=info&arg[]={}'
+import lib.aur.query as aur
 
 
 class BuilderError(Exception):
@@ -27,17 +25,10 @@ class Builder:
 
     def build(self, date):
         # get package info from AUR
-        with closing(urlopen(RPC_URL.format(self.package_name))) as request:
-            result = json.loads(request.read().decode())
-
-        # package detail dictionary
-        if not len(result['results']) == 1:
-            raise BuilderError
-        detail = result['results'][0]
+        info = aur.info(self.package_name)
 
         # get tarball url and package version
-        tar_url = AUR_URL + detail['URLPath']
-        self.version = detail['Version']
+        self.version = info.Version
 
         path = packager.path.Path(self.package_name, self.version, date.isoformat())
         build_dir = path.build_dir
@@ -50,7 +41,7 @@ class Builder:
         os.makedirs(dest_dir, 0o700)
 
         # get tarball
-        with closing(urlopen(tar_url)) as request:
+        with closing(urlopen(info.tar_url)) as request:
             with open(tar_path, 'wb') as f:
                 f.write(request.read())
 
@@ -74,7 +65,7 @@ makepkg -s --noconfirm
 
         # write log
         with open(self.log_path, 'w') as f:
-            f.write(json.dumps(result, indent=4))
+            f.write(json.dumps(info, indent=4))
             f.write('\n')
             f.write(completed.stdout)
 
