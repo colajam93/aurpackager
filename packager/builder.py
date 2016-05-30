@@ -1,11 +1,10 @@
 from manager.models import Package
-from urllib.request import urlopen
-from contextlib import closing
 import json
 import os
 import subprocess
 import packager.path
 import lib.aur as aur
+import lib.download as download
 
 
 class BuilderError(Exception):
@@ -27,25 +26,20 @@ class Builder:
         # get package info from AUR
         info = aur.info(self.package_name)
 
-        # get tarball url and package version
+        # create required path
         self.version = info.Version
-
         path = packager.path.Path(self.package_name, self.version, date.isoformat())
         build_dir = path.build_dir
-        tar_path = path.tar_file
         dest_dir = path.dest_dir
-        self.log_path = path.log_file
 
         # create working directories
         os.makedirs(build_dir, 0o700)
         os.makedirs(dest_dir, 0o700)
 
         # get tarball
-        with closing(urlopen(info.tar_url)) as request:
-            with open(tar_path, 'wb') as f:
-                f.write(request.read())
+        download.save_to_file(info.tar_url, path.tar_file)
 
-        # build script
+        # generate build script
         build_script = '''
 #!/bin/bash
 
@@ -55,8 +49,7 @@ cd {package_name}
 export PKGDEST='{dest}'
 makepkg -s --noconfirm
 '''
-        build_script_path = path.script_file
-        with open(build_script_path, 'w') as f:
+        with open(path.script_file, 'w') as f:
             f.write(build_script.format(build_dir=build_dir, package_name=self.package_name, dest=dest_dir))
 
         # execute build script
@@ -64,9 +57,10 @@ makepkg -s --noconfirm
                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
 
         # write log
-        with open(self.log_path, 'w') as f:
+        with open(path.log_file, 'w') as f:
             f.write(json.dumps(info, indent=4))
             f.write('\n')
             f.write(completed.stdout)
 
+        self.log_path = path.log_file
         self.result_path = path.result_file
