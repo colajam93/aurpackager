@@ -1,11 +1,10 @@
 from manager.models import Package
-from packager.settings import BUILD_ROOT_DIR
 from urllib.request import urlopen
 from contextlib import closing
 import json
 import os
-import os.path
 import subprocess
+import packager.path
 
 AUR_URL = 'https://aur.archlinux.org'
 RPC_URL = AUR_URL + '/rpc/?v=5&type=info&arg[]={}'
@@ -40,17 +39,11 @@ class Builder:
         tar_url = AUR_URL + detail['URLPath']
         self.version = detail['Version']
 
-        # path structure:
-        # build_dir = [BUILD_ROOT_DIR]/[package_name]/[version]/[date]
-        # build_script = [build_dir]/_build_script.sh
-        # dest = [build_dir]/[package].pkg.tar.xz,build.log
-        # work_dir = [build_dir]/[package_name]/PKGBUILD,etc.
-        build_dir = os.path.join(BUILD_ROOT_DIR, self.package_name, self.version, date.isoformat())
-        # remove ':'
-        build_dir = build_dir.translate(str.maketrans(':', '_'))
-        tar_path = os.path.join(build_dir, self.package_name)
-        dest_dir = os.path.join(build_dir, '_dest')
-        self.log_path = os.path.join(dest_dir, 'build.log')
+        path = packager.path.Path(self.package_name, self.version, date.isoformat())
+        build_dir = path.build_dir
+        tar_path = path.tar_file
+        dest_dir = path.dest_dir
+        self.log_path = path.log_file
 
         # create working directories
         os.makedirs(build_dir, 0o700)
@@ -71,7 +64,7 @@ cd {package_name}
 export PKGDEST='{dest}'
 makepkg -s --noconfirm
 '''
-        build_script_path = os.path.join(build_dir, '_build_script.sh')
+        build_script_path = path.script_file
         with open(build_script_path, 'w') as f:
             f.write(build_script.format(build_dir=build_dir, package_name=self.package_name, dest=dest_dir))
 
@@ -85,11 +78,4 @@ makepkg -s --noconfirm
             f.write('\n')
             f.write(completed.stdout)
 
-        # find result package
-        dest_list = os.listdir(dest_dir)
-        try:
-            dest_filename = next(x for x in dest_list if x.endswith('pkg.tar.xz'))
-        except StopIteration:  # not found
-            raise BuilderError
-        result_path = os.path.join(dest_dir, dest_filename)
-        self.result_path = result_path
+        self.result_path = path.result_file
