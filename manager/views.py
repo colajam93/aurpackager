@@ -4,8 +4,10 @@ from django.http import HttpResponse
 import os.path
 from django.core.files import File
 import packager.path
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
+@ensure_csrf_cookie
 def package_list(request):
     packages = Package.objects.all().order_by('id')
     for package in packages:
@@ -18,6 +20,7 @@ def package_list(request):
     return render(request, 'package_list.html', {'packages': packages, 'active': 'list'})
 
 
+@ensure_csrf_cookie
 def package_detail(request, package_name):
     package = Package.objects.get(name=package_name)
     builds = Build.objects.filter(package_id=package.id).order_by('-id')
@@ -26,14 +29,17 @@ def package_detail(request, package_name):
     return render(request, 'package_detail.html', {'package': package, 'builds': builds, 'active': 'list'})
 
 
+@ensure_csrf_cookie
 def package_register(request):
     return render(request, 'package_register.html', {'active': 'register'})
 
 
+@ensure_csrf_cookie
 def package_register_detail(request, package_name):
     return render(request, 'package_register_detail.html', {'package_name': package_name, 'active': 'register'})
 
 
+@ensure_csrf_cookie
 def build_detail(request, package_name, build_number):
     package = Package.objects.get(name=package_name)
     try:
@@ -55,6 +61,7 @@ def build_detail(request, package_name, build_number):
                    'active': 'list'})
 
 
+@ensure_csrf_cookie
 def build_download(request, package_name, build_number):
     package = Package.objects.get(name=package_name)
     try:
