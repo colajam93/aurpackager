@@ -13,7 +13,7 @@ def post(build):
     detail_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_detail',
                                                           kwargs={'package_name': build.package.name,
                                                                   'build_number': 1}))
-    download_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:package_download',
+    download_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_download',
                                                             kwargs={'package_name': build.package.name,
                                                                     'build_number': 1}))
     text = '{} {} <{}|Detail> <{}|Download>\n{}'.format(build.package.name, build.status, detail_url, download_url,
