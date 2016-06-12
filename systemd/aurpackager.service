@@ -1,0 +1,13 @@
+[Unit]
+Description=AUR package builder service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/uwsgi --ini /home/packager/aurpackager/aurpackager.ini
+ExecStop=/bin/kill -HUP $MAINPID
+User=packager
+Group=packager
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
