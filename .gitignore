@@ -156,3 +156,4 @@ bower_components
 manager/static/js/
 manager/static/css/
 /static/
+/db/
