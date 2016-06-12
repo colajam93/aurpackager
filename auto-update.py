@@ -5,7 +5,7 @@ import urllib.request
 
 
 def main():
-    url = 'http://localhost:8000/api/build_all/?only_update=true'
+    url = 'http://localhost:10081/api/build_all/?only_update=true'
     interval = 1800  # 30 minutes
 
     while True:
