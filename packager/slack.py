@@ -16,7 +16,8 @@ def post(build):
     download_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_download',
                                                             kwargs={'package_name': build.package.name,
                                                                     'build_number': 1}))
-    text = '<{}|Detail>\n<{}|Download>\nsha256: {}'.format(detail_url, download_url, build.sha256)
+    text = '{}: {} <{}|Detail> <{}|Download>\n{}'.format(build.status, build.package.name, detail_url, download_url,
+                                                         build.sha256)
     if build.status == Build.SUCCESS:
         emoji = ':+1:'
     else:
