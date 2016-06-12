@@ -10,10 +10,14 @@ from packager.settings import SLACK_NOTIFICATION_URL, AUR_PACKAGER_BASE_URL
 def post(build):
     assert SLACK_NOTIFICATION_URL
     assert AUR_PACKAGER_BASE_URL
-    url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_detail',
-                                                   kwargs={'package_name': build.package.name, 'build_number': 1}))
-    text = str(build)
-    text += '\n{}'.format(url)
+    detail_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_detail',
+                                                          kwargs={'package_name': build.package.name,
+                                                                  'build_number': 1}))
+    download_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:package_download',
+                                                            kwargs={'package_name': build.package.name,
+                                                                    'build_number': 1}))
+    text = '{} {} <{}|Detail> <{}|Download>\n{}'.format(build.package.name, build.status, detail_url, download_url,
+                                                        build.sha256)
     if build.status == Build.SUCCESS:
         emoji = ':+1:'
     else:
