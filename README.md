@@ -38,6 +38,7 @@ $ virtualenv venv
 $ source venv/bin/activate
 $ ./install_dependencies.sh
 $ ./manage.py migrate
+$ ./manage.py collectstatic --no-input
 ```
 
 - Run server
@@ -45,7 +46,7 @@ $ ./manage.py migrate
 Run development server or deploy to WSGI environment.
 
 ```
-$ ./manage.py runserver
+$ uwsgi --ini /home/packager/aurpackager/aurpackager.ini
 ```
 
 ## Automatic update checking
