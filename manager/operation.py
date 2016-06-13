@@ -106,7 +106,7 @@ def build_update():
             elif latest.status == Build.SUCCESS:
                 need_check.append(latest)
     if need_check:
-        infos = aur.multiple_info(map(lambda x: x.package.name, need_check))
+        infos = aur.multiple_info(list(map(lambda x: x.package.name, need_check)))
         for p in need_check:
             package_name = p.package.name
             if infos[package_name] and infos[package_name].Version != p.version:
