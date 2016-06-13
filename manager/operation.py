@@ -94,6 +94,7 @@ def build_all():
 def build_update():
     packages = Package.objects.all()
     sync.system_upgrade()
+    need_check = list()
     for package in packages:
         try:
             latest = Build.objects.filter(package_id=package.id).order_by('-id')[0]
@@ -103,9 +104,13 @@ def build_update():
             if latest.status == Build.FAILURE:
                 BuilderManager().register(package.id)
             elif latest.status == Build.SUCCESS:
-                info = aur.info(package.name)
-                if not info.Version == latest.version:
-                    BuilderManager().register(package.id)
+                need_check.append(latest)
+    if need_check:
+        infos = aur.multiple_info(map(lambda x: x.package.name, need_check))
+        for p in need_check:
+            package_name = p.package.name
+            if infos[package_name] and infos[package_name].Version != p.version:
+                BuilderManager().register(p.package.id)
 
 
 def install(name):
