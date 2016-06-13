@@ -103,6 +103,7 @@ def package_build_all(_, **kwargs):
         operation.build_update()
     else:
         operation.build_all()
+    return {'result': True}
 
 
 @make_api(require=['name'], error_check=True, status=404)
@@ -122,8 +123,10 @@ def package_install(params):
 @make_api()
 def system_upgrade(_):
     sync.system_upgrade()
+    return {'result': True}
 
 
 @make_api()
 def install_all(_):
     operation.install_all()
+    return {'result': True}
