@@ -16,7 +16,7 @@ def install(package, asdeps=False):
     option = ['--noconfirm', '--needed']
     if asdeps:
         option.append('--asdeps')
-    command = 'sudo -S pacman -S {} {}'.format(' '.join(option), package)
+    command = 'sudo -S pacman -S {} {}'.format(' '.join(option), ' '.join(package))
     execute(command, discard_output=True)
 
 
