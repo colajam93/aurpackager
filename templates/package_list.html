@@ -20,6 +20,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Build Status</th>
+                    <th>Ignore</th>
                     <th>Operation</th>
                 </tr>
                 </thead>
@@ -29,6 +30,7 @@
                         class="clickable-pointer">
                         <td>{{ package.name }}</td>
                         <td>{{ package.status }}</td>
+                        <td>{{ package.ignore }}</td>
                         <td>
                             <button type="submit" class="btn btn-primary"
                                     onclick="sendBuildQuery('{{ package.name }}')">
@@ -39,6 +41,10 @@
                                onclick="window.event.cancelBubble = true;"
                                download>Download
                             </a>
+                            <button type="submit" class="btn btn-primary"
+                                    onclick="sendIgnoreQuery('{{ package.name }}')">
+                                Ignore
+                            </button>
                             <button type="submit" class="btn btn-danger"
                                     onclick="openRemoveModal('{{ package.name }}')">
                                 Remove
@@ -144,6 +150,24 @@
                 sendRemoveQuery(name);
             };
             $('#modal').modal('toggle');
+        }
+
+        function sendIgnoreQuery(name) {
+            window.event.cancelBubble = true;
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:toggle_ignore' %}",
+                data: {"name": name},
+                dataType: 'json'
+            }).then(function () {
+                window.location.reload(true);
+            }).fail(function (e) {
+                $('#modal').modal('toggle');
+                const content = document.getElementById('modalContent');
+                content.innerHTML = e.responseText;
+                const label = document.getElementById('modalLabel');
+                label.innerHTML = "Error";
+            });
         }
     </script>
 {% endblock content %}
