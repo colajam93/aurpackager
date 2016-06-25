@@ -5,9 +5,10 @@ FIELD_LENGTH = 100
 
 class Package(models.Model):
     name = models.CharField(max_length=FIELD_LENGTH)
+    ignore = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return '{} ignore: {}'.format(self.name, self.ignore)
 
 
 class Build(models.Model):

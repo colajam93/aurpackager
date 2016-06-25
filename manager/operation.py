@@ -96,6 +96,8 @@ def build_update():
     sync.system_upgrade()
     need_check = list()
     for package in packages:
+        if package.ignore:
+            continue
         try:
             latest = Build.objects.filter(package_id=package.id).order_by('-id')[0]
         except IndexError:
@@ -148,3 +150,13 @@ def install_all():
                 except FileNotFoundError:
                     pass
     upgrade.install(' '.join(files))
+
+
+def toggle_ignore(name):
+    if not _is_registered(name):
+        raise OperationError('{} has not registered'.format(name))
+
+    package = Package.objects.get(name=name)
+    package.ignore = not package.ignore
+    package.save()
+    return package.ignore

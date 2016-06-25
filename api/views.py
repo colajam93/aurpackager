@@ -130,3 +130,17 @@ def system_upgrade(_):
 def install_all(_):
     operation.install_all()
     return {'result': True}
+
+
+@make_api(require=['name'])
+def toggle_ignore(params):
+    ret = dict()
+    try:
+        ret['ignore'] = operation.toggle_ignore(params['name'])
+    except operation.OperationError as e:
+        ret['result'] = False
+        ret['detail'] = str(e)
+    else:
+        ret['result'] = True
+        ret['name'] = params['name']
+    return ret

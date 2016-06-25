@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^install/$', views.package_install, name='package_install'),
     url(r'^install_all/$', views.install_all, name='package_install_all'),
     url(r'^system_upgrade/$', views.system_upgrade, name='system_upgrade'),
+    url(r'^toggle_ignore/$', views.toggle_ignore, name='toggle_ignore'),
 ]
