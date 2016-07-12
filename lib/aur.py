@@ -8,6 +8,10 @@ INFO_URL = BASE_URL + 'type=info&'
 SEARCH_URL = BASE_URL + 'type=search&'
 
 
+def aur_package_url(name):
+    return AUR_URL + '/packages/{}'.format(name)
+
+
 class PackageNotFoundError(Exception):
     pass
 
@@ -26,7 +30,7 @@ class AURInfo(AttrDict):
     def __init__(self, package_dict):
         super().__init__(package_dict)
         self.tar_url = AUR_URL + self.URLPath
-        self.aur_url = AUR_URL + '/packages/{}'.format(self.Name)
+        self.aur_url = aur_package_url(self.Name)
 
 
 def _aur_query(url):

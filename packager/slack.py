@@ -3,7 +3,7 @@ import urllib.request
 import json
 from django.core.urlresolvers import reverse_lazy
 from manager.models import Build
-
+from lib.aur import aur_package_url
 from packager.settings import SLACK_NOTIFICATION_URL, AUR_PACKAGER_BASE_URL
 
 
@@ -16,8 +16,10 @@ def post(build):
     download_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_download',
                                                             kwargs={'package_name': build.package.name,
                                                                     'build_number': 1}))
-    text = '{}: {} <{}|Detail> <{}|Download>\nsha256: {}'.format(build.status, build.package.name, detail_url,
-                                                                 download_url, build.sha256)
+    text = '{}: {} <{}|Detail> <{}|Download> <{}|AUR>\nsha256: {}'.format(build.status, build.package.name, detail_url,
+                                                                          download_url,
+                                                                          aur_package_url(build.package.name),
+                                                                          build.sha256)
     if build.status == Build.SUCCESS:
         emoji = ':+1:'
     else:
