@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load extra_tags %}
 
 {% block title %}{{ package.name }} - Package Detail{% endblock title %}
 
@@ -14,6 +15,8 @@
                     onclick="sendBuildQuery()">
                 Build
             </button>
+            <a href="{% aur_package_url package.name %}"
+               class="btn btn-primary">AUR</a>
         </div>
     </div>
     <div class="row">
