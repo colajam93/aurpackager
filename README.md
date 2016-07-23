@@ -1,20 +1,13 @@
 # AUR Packager
 
-## Description
-
-This application provides AUR package building on your server through web interface.
-You can share AUR packages in all your machines through http.
+AUR package build server using Django.
 
 ## Requirement
 
 - Arch Linux
+- VM or container (This app use `sudo` for package installing so you should use them)
 
 ## Install
-
-- Create virtual environment
-
-This application require no password sudo to install dependencies.
-So you should run in VM or container.
 
 - Create build user
 
@@ -44,6 +37,7 @@ $ ./manage.py collectstatic --no-input
 - Run server
 
 Run development server or deploy to WSGI environment.
+Static files are located at `/home/packager/aurpackager/static`.
 
 ```
 $ uwsgi --ini /home/packager/aurpackager/aurpackager.ini
