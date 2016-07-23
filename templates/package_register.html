@@ -32,7 +32,7 @@
                 url: "{% url 'api:package_search' %}",
                 data: {"name": name},
                 dataType: 'json'
-            }).then(function (results) {
+            }).then(results => {
                 const table = document.createElement('table');
                 table.className += " table table-striped table-bordered table-hover";
                 const header = table.createTHead();
@@ -44,7 +44,7 @@
                 for (result of results) {
                     const row = body.insertRow();
                     row.className += " clickable-pointer";
-                    row.setAttribute('data-href', "/packages/register/" + result['Name']);
+                    row.setAttribute('data-href', "{% url 'manager:package_register_detail' package_name='' %}" + result['Name']);
                     row.insertCell(0).innerHTML = result['Name'];
                     row.insertCell(1).innerHTML = "<a href=" + result['aur_url'] + ">View on AUR</a>";
                 }
