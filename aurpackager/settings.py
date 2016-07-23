@@ -112,11 +112,15 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Prefix
+
+URL_PREFIX = '/package'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '/static/'
+STATIC_URL = URL_PREFIX + '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'common', 'static'),
     os.path.join(BASE_DIR, 'manager', 'static'),

@@ -15,9 +15,18 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from aurpackager.settings import URL_PREFIX
+
+
+def _application_directory():
+    if URL_PREFIX:
+        return URL_PREFIX.strip('/') + '/'
+    else:
+        return URL_PREFIX
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/', include('api.urls', namespace='api')),
-    url(r'^', include('manager.urls', namespace='manager'))
+    url(r'^{}api/'.format(_application_directory()), include('api.urls', namespace='api')),
+    url(r'^{}'.format(_application_directory()), include('manager.urls', namespace='manager'))
 ]
