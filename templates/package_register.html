@@ -22,8 +22,10 @@
         </div>
     </div>
     <script type="application/javascript">
+        'use strict';
+
         function sendQuery() {
-            const name = document.getElementById('packageName').value;
+            var name = document.getElementById('packageName').value;
             if (!name) {
                 return;
             }
@@ -32,23 +34,45 @@
                 url: "{% url 'api:package_search' %}",
                 data: {"name": name},
                 dataType: 'json'
-            }).then(results => {
-                const table = document.createElement('table');
+            }).then(function (results) {
+                var table = document.createElement('table');
                 table.className += " table table-striped table-bordered table-hover";
-                const header = table.createTHead();
-                const hrow = header.insertRow();
+                var header = table.createTHead();
+                var hrow = header.insertRow();
                 hrow.insertCell(0).innerHTML = "Name";
                 hrow.insertCell(1).innerHTML = "AUR";
-                const body = document.createElement('tbody');
+                var body = document.createElement('tbody');
                 table.appendChild(body);
-                for (result of results) {
-                    const row = body.insertRow();
-                    row.className += " clickable-pointer";
-                    row.setAttribute('data-href', "{% url 'manager:package_register_detail' package_name='' %}" + result['Name']);
-                    row.insertCell(0).innerHTML = result['Name'];
-                    row.insertCell(1).innerHTML = "<a href=" + result['aur_url'] + ">View on AUR</a>";
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = results[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var result = _step.value;
+
+                        var row = body.insertRow();
+                        row.className += " clickable-pointer";
+                        row.setAttribute('data-href', "{% url 'manager:package_register_detail' package_name='' %}" + result['Name']);
+                        row.insertCell(0).innerHTML = result['Name'];
+                        row.insertCell(1).innerHTML = "<a href=" + result['aur_url'] + ">View on AUR</a>";
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
                 }
-                const root = document.getElementById('resultTable');
+
+                var root = document.getElementById('resultTable');
                 // remove current children
                 while (root.firstChild) {
                     root.removeChild(root.firstChild);
