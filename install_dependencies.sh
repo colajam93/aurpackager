@@ -23,3 +23,6 @@ install -m644 $bower_dir/bootstrap/dist/js/bootstrap.min.js $js_dir
 
 # install jquery
 install -m644 $bower_dir/jquery/dist/jquery.min.js $js_dir
+
+# install tether
+install -m644 $bower_dir/tether/dist/js/tether.min.js $js_dir
