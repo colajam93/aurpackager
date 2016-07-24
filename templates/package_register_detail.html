@@ -31,9 +31,11 @@
         </div>
     </div>
     <script type="application/javascript">
+        "use strict";
+
         onload = getInfo();
         function getInfo() {
-            const name = "{{ package_name }}";
+            var name = "{{ package_name }}";
             if (!name) {
                 return;
             }
@@ -43,15 +45,15 @@
                 data: {"name": name},
                 dataType: 'json'
             }).then(function (result) {
-                const table = document.createElement('table');
+                var table = document.createElement('table');
                 table.className += " table table-striped table-bordered table-hover";
-                const header = table.createTHead();
-                const hrow = header.insertRow();
+                var header = table.createTHead();
+                var hrow = header.insertRow();
                 hrow.insertCell(0).innerHTML = "Key";
                 hrow.insertCell(1).innerHTML = "Value";
-                const body = document.createElement('tbody');
+                var body = document.createElement('tbody');
                 table.appendChild(body);
-                let keys = [];
+                var keys = [];
                 keys.push('Name');
                 keys.push('Version');
                 keys.push('PackageBase');
@@ -67,20 +69,20 @@
                 keys.push('MakeDepends');
                 keys.push('OptDepends');
                 keys.forEach(function (key) {
-                    const row = body.insertRow();
+                    var row = body.insertRow();
                     row.insertCell(0).innerHTML = key;
                     row.insertCell(1).innerHTML = result[key];
                 });
-                let timeKeys = [];
+                var timeKeys = [];
                 timeKeys.push('FirstSubmitted');
                 timeKeys.push('LastModified');
                 timeKeys.push('OutOfDate');
                 timeKeys.forEach(function (key) {
-                    const row = body.insertRow();
+                    var row = body.insertRow();
                     row.insertCell(0).innerHTML = key;
                     row.insertCell(1).innerHTML = new Date(result[key] * 1000).toISOString();
                 });
-                const root = document.getElementById('resultTable');
+                var root = document.getElementById('resultTable');
                 // remove current children
                 while (root.firstChild) {
                     root.removeChild(root.firstChild);
@@ -90,20 +92,20 @@
         }
         function sendRegisterQuery() {
             function openModal(keys, result) {
-                const table = document.createElement('table');
+                var table = document.createElement('table');
                 table.className += " table table-striped table-bordered table-hover";
-                const header = table.createTHead();
-                const hrow = header.insertRow();
+                var header = table.createTHead();
+                var hrow = header.insertRow();
                 hrow.insertCell(0).innerHTML = "Key";
                 hrow.insertCell(1).innerHTML = "Value";
-                const body = document.createElement('tbody');
+                var body = document.createElement('tbody');
                 table.appendChild(body);
                 keys.forEach(function (key) {
-                    const row = body.insertRow();
+                    var row = body.insertRow();
                     row.insertCell(0).innerHTML = key;
                     row.insertCell(1).innerHTML = result[key];
                 });
-                const content = document.getElementById('modalContent');
+                var content = document.getElementById('modalContent');
                 while (content.firstChild) {
                     content.removeChild(content.firstChild);
                 }
@@ -117,12 +119,12 @@
                 data: {"name": "{{ package_name }}", "depend": document.getElementById('withDepend').checked},
                 dataType: 'json'
             }).then(function (result) {
-                const keys = [];
+                var keys = [];
                 keys.push('native');
                 keys.push('foreign');
                 openModal(keys, result);
             }).fail(function (e) {
-                const keys = [];
+                var keys = [];
                 keys.push('detail');
                 openModal(keys, JSON.parse(e.responseText));
             });
