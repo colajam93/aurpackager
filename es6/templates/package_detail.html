@@ -53,8 +53,6 @@
         </div>
     </div>
     <script type="application/javascript">
-        "use strict";
-
         function sendInstallQuery() {
             $.ajax({
                 type: 'POST',
@@ -63,9 +61,9 @@
                 dataType: 'json'
             }).fail(function (e) {
                 $('#modal').modal('toggle');
-                var content = document.getElementById('modalContent');
+                const content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
-                var label = document.getElementById('modalLabel');
+                const label = document.getElementById('modalLabel');
                 label.innerHTML = "Error";
             });
         }
@@ -81,9 +79,9 @@
                 window.location.reload(true);
             }).fail(function (e) {
                 $('#modal').modal('toggle');
-                var content = document.getElementById('modalContent');
+                const content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
-                var label = document.getElementById('modalLabel');
+                const label = document.getElementById('modalLabel');
                 label.innerHTML = "Error";
             });
         }

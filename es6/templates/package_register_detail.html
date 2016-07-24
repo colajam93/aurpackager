@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}{{ package_name }} - Register{% endblock title %}
+
+{% block extra_modal_footer %}
+    <button type="button" class="btn btn-primary"
+            onclick="window.location={% url 'manager:package_list' %}">
+        Go to Top
+    </button>
+{% endblock %}
+
+{% block content %}
+    <h3>{{ package_name }}</h3>
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-inline" action="javascript:void(0)">
+                <fieldset class="form-group">
+                    <a class="btn btn-secondary" href="{% url 'manager:package_register' %}">Back
+                        to Search</a>
+                    <button type="submit" class="btn btn-primary" onclick="sendRegisterQuery()">Register</button>
+                    <label for="withDepend">with dependencies</label>
+                    <input type="checkbox" id="withDepend" checked>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div id="resultTable">
+            </div>
+        </div>
+    </div>
+    <script type="application/javascript">
+        "use strict";
+
+        onload = getInfo();
+        function getInfo() {
+            var name = "{{ package_name }}";
+            if (!name) {
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:package_info' %}",
+                data: {"name": name},
+                dataType: 'json'
+            }).then(function (result) {
+                var table = document.createElement('table');
+                table.className += " table table-striped table-bordered table-hover";
+                var header = table.createTHead();
+                var hrow = header.insertRow();
+                hrow.insertCell(0).innerHTML = "Key";
+                hrow.insertCell(1).innerHTML = "Value";
+                var body = document.createElement('tbody');
+                table.appendChild(body);
+                var keys = [];
+                keys.push('Name');
+                keys.push('Version');
+                keys.push('PackageBase');
+                keys.push('Description');
+                keys.push('URL');
+                keys.push('Keywords');
+                keys.push('License');
+                keys.push('Conflicts');
+                keys.push('Maintainer');
+                keys.push('NumVotes');
+                keys.push('Popularity');
+                keys.push('Depends');
+                keys.push('MakeDepends');
+                keys.push('OptDepends');
+                keys.forEach(function (key) {
+                    var row = body.insertRow();
+                    row.insertCell(0).innerHTML = key;
+                    row.insertCell(1).innerHTML = result[key];
+                });
+                var timeKeys = [];
+                timeKeys.push('FirstSubmitted');
+                timeKeys.push('LastModified');
+                timeKeys.push('OutOfDate');
+                timeKeys.forEach(function (key) {
+                    var row = body.insertRow();
+                    row.insertCell(0).innerHTML = key;
+                    row.insertCell(1).innerHTML = new Date(result[key] * 1000).toISOString();
+                });
+                var root = document.getElementById('resultTable');
+                // remove current children
+                while (root.firstChild) {
+                    root.removeChild(root.firstChild);
+                }
+                root.appendChild(table);
+            });
+        }
+        function sendRegisterQuery() {
+            function openModal(keys, result) {
+                var table = document.createElement('table');
+                table.className += " table table-striped table-bordered table-hover";
+                var header = table.createTHead();
+                var hrow = header.insertRow();
+                hrow.insertCell(0).innerHTML = "Key";
+                hrow.insertCell(1).innerHTML = "Value";
+                var body = document.createElement('tbody');
+                table.appendChild(body);
+                keys.forEach(function (key) {
+                    var row = body.insertRow();
+                    row.insertCell(0).innerHTML = key;
+                    row.insertCell(1).innerHTML = result[key];
+                });
+                var content = document.getElementById('modalContent');
+                while (content.firstChild) {
+                    content.removeChild(content.firstChild);
+                }
+                content.appendChild(table);
+                $('#modal').modal('toggle');
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:package_register' %}",
+                data: {"name": "{{ package_name }}", "depend": document.getElementById('withDepend').checked},
+                dataType: 'json'
+            }).then(function (result) {
+                var keys = [];
+                keys.push('native');
+                keys.push('foreign');
+                openModal(keys, result);
+            }).fail(function (e) {
+                var keys = [];
+                keys.push('detail');
+                openModal(keys, JSON.parse(e.responseText));
+            });
+        }
+    </script>
+{% endblock content %}
