@@ -128,7 +128,10 @@ def install(name):
         try:
             path = packager.path.build_to_path(build_)
             sync.system_upgrade()
-            upgrade.install(path.result_file)
+            completed = upgrade.install(path.result_file)
+            if completed.returncode:
+                raise OperationError(
+                    'stdout:\n{}\n\nstderr\n:{}'.format(completed.stdout.decode(), completed.stderr.decode()))
         except FileNotFoundError as e:
             raise OperationError from e
     else:
