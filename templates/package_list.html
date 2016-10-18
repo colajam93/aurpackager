@@ -7,7 +7,7 @@
         <button onclick="sendSystemUpgradeQuery()" class="btn btn-primary-outline">System Upgrade</button>
         <button onclick="sendBuildUpdateQuery()" class="btn btn-primary-outline">Build Update</button>
         <button onclick="sendInstallAllQuery()" class="btn btn-primary-outline">Install All</button>
-        <button onclick="sendBuildAllQuery()" class="btn btn-primary-outline">Build All</button>
+        <button onclick="openBuildAllModal()" class="btn btn-primary-outline">Build All</button>
     </form>
 {% endblock nav %}
 
@@ -66,6 +66,25 @@
             }).then(function () {
                 window.location.reload(true);
             });
+        }
+
+        function openBuildAllModal() {
+            window.event.cancelBubble = true;
+            const label = document.getElementById('modalLabel');
+            label.innerHTML = "Build All Package";
+
+            const content = document.getElementById('modalContent');
+            content.innerHTML = '<div class="row">\n' +
+                    '<div class="col-xs-12">\n' +
+                    'All registered packages will build.\n' +
+                    '</div></div>\n';
+            const modalFooter = document.getElementById('modalFooter');
+            modalFooter.innerHTML += '<button type="submit" class="btn btn-primary" id="proceedButton">Proceed</button>';
+            const button = document.getElementById('proceedButton');
+            button.onclick = function () {
+                sendBuildAllQuery();
+            };
+            $('#modal').modal('toggle');
         }
 
         function sendBuildUpdateQuery() {
