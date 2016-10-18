@@ -1,10 +1,11 @@
+import functools
+import json
+
 from django.http import HttpResponse
 from django.template import RequestContext, Template
-import json
+
 import lib.aur as aur
 import manager.operation as operation
-import functools
-import lib.pacman.sync as sync
 
 
 def make_api(require=None, optional=None, error_check=False, status=400):
@@ -118,18 +119,6 @@ def package_install(params):
         ret['result'] = True
         ret['name'] = params['name']
     return ret
-
-
-@make_api()
-def system_upgrade(_):
-    sync.system_upgrade()
-    return {'result': True}
-
-
-@make_api()
-def install_all(_):
-    operation.install_all()
-    return {'result': True}
 
 
 @make_api(require=['name'])

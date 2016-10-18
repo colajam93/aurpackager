@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 from api import views
 
 urlpatterns = [
@@ -9,7 +10,5 @@ urlpatterns = [
     url(r'^build/$', views.package_build, name='package_build'),
     url(r'^build_all/$', views.package_build_all, name='package_build_all'),
     url(r'^install/$', views.package_install, name='package_install'),
-    url(r'^install_all/$', views.install_all, name='package_install_all'),
-    url(r'^system_upgrade/$', views.system_upgrade, name='system_upgrade'),
     url(r'^toggle_ignore/$', views.toggle_ignore, name='toggle_ignore'),
 ]
