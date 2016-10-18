@@ -7,7 +7,7 @@ css_dir=$static_dir/css
 js_dir=$static_dir/js
 
 # install python dependencies
-pip install -r requirements.txt
+pip install --upgrade -r requirements.txt
 
 # download js/css dependencies
 bower install
