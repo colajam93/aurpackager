@@ -60,6 +60,7 @@
         'use strict';
 
         function openBuildAllModal() {
+            initializeModalWindow();
             window.event.cancelBubble = true;
             const label = document.getElementById('modalLabel');
             label.innerHTML = "Build All Package";
@@ -118,6 +119,7 @@
                 $('#modal').modal('toggle');
                 window.location.reload(true);
             }).fail(function (e) {
+                initializeModalWindow();
                 var content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
             });
@@ -133,6 +135,7 @@
             }).then(function () {
                 window.location.reload(true);
             }).fail(function (e) {
+                initializeModalWindow();
                 $('#modal').modal('toggle');
                 var content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
@@ -142,10 +145,10 @@
         }
 
         function openRemoveModal(name) {
+            initializeModalWindow();
             window.event.cancelBubble = true;
             var label = document.getElementById('modalLabel');
             label.innerHTML = "Remove " + name;
-
             var content = document.getElementById('modalContent');
             content.innerHTML = '<div class="row">\n                    <div class="col-xs-12">\n                    Remove ' + name + '?\n                    </div></div>\n                    <div class="row">\n                    <div class="col-xs-12">\n                    <form class="form-inline" action="javascript:void(0)">\n                    <fieldset class="form-group">\n                    <button type="submit" class="btn btn-danger" id="sendRemoveQueryButton">Remove</button>\n                    <label for="cleanup">Remove build result completely</label>\n                    <input type="checkbox" id="cleanup" checked>\n                    </fieldset>\n                    </form>\n                    </div></div>';
             var button = document.getElementById('sendRemoveQueryButton');
@@ -165,6 +168,7 @@
             }).then(function () {
                 window.location.reload(true);
             }).fail(function (e) {
+                initializeModalWindow();
                 $('#modal').modal('toggle');
                 var content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;

@@ -32,3 +32,11 @@ function csrfSafeMethod(method) {
     );
 }
 
+function initializeModalWindow() {
+    const label = document.getElementById('modalLabel');
+    label.innerHTML = '';
+    const content = document.getElementById('modalContent');
+    content.innerHTML = '';
+    const extraModalFooter = document.getElementById('extraModalFooter');
+    extraModalFooter.innerHTML = '';
+}
