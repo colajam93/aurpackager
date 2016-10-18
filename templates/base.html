@@ -53,10 +53,14 @@
                 <div class="modal-body" id="modalContent">
                 </div>
                 <div class="modal-footer" id="modalFooter">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    {% block extra_modal_footer %}
-                        {{ extra_modal_footer }}
-                    {% endblock %}
+                    <form action="javascript:void(0)" class="form-inline">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <div id="extraModalFooter" class="form-group">
+                            {% block extra_modal_footer %}
+                                {{ extra_modal_footer }}
+                            {% endblock %}
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

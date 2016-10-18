@@ -59,30 +59,26 @@
     <script type="application/javascript">
         'use strict';
 
-        function sendBuildAllQuery() {
-            $.ajax({
-                url: "{% url 'api:package_build_all' %}",
-                dataType: 'json'
-            }).then(function () {
-                window.location.reload(true);
-            });
-        }
-
         function openBuildAllModal() {
             window.event.cancelBubble = true;
             const label = document.getElementById('modalLabel');
             label.innerHTML = "Build All Package";
-
             const content = document.getElementById('modalContent');
             content.innerHTML = '<div class="row">\n' +
                     '<div class="col-xs-12">\n' +
                     'All registered packages will build.\n' +
                     '</div></div>\n';
-            const modalFooter = document.getElementById('modalFooter');
-            modalFooter.innerHTML += '<button type="submit" class="btn btn-primary" id="proceedButton">Proceed</button>';
+            const extraModalFooter = document.getElementById('extraModalFooter');
+            extraModalFooter.innerHTML = '<button type="submit" class="btn btn-primary" id="proceedButton">Proceed</button>';
             const button = document.getElementById('proceedButton');
             button.onclick = function () {
-                sendBuildAllQuery();
+                $.ajax({
+                    url: "{% url 'api:package_build_all' %}",
+                    dataType: 'json'
+                }).then(function () {
+                    $('#modal').modal('toggle');
+                    window.location.reload(true);
+                });
             };
             $('#modal').modal('toggle');
         }
