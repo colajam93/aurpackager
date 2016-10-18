@@ -147,11 +147,25 @@
         function openRemoveModal(name) {
             initializeModalWindow();
             window.event.cancelBubble = true;
-            var label = document.getElementById('modalLabel');
+            const label = document.getElementById('modalLabel');
             label.innerHTML = "Remove " + name;
-            var content = document.getElementById('modalContent');
-            content.innerHTML = '<div class="row">\n                    <div class="col-xs-12">\n                    Remove ' + name + '?\n                    </div></div>\n                    <div class="row">\n                    <div class="col-xs-12">\n                    <form class="form-inline" action="javascript:void(0)">\n                    <fieldset class="form-group">\n                    <button type="submit" class="btn btn-danger" id="sendRemoveQueryButton">Remove</button>\n                    <label for="cleanup">Remove build result completely</label>\n                    <input type="checkbox" id="cleanup" checked>\n                    </fieldset>\n                    </form>\n                    </div></div>';
-            var button = document.getElementById('sendRemoveQueryButton');
+            const content = document.getElementById('modalContent');
+            content.innerHTML = '<div class="row">\n' +
+                    '<div class="col-xs-12">\n' +
+                    'Remove ' + name + '?\n' +
+                    '</div></div>\n' +
+                    '<div class="row">\n' +
+                    '<div class="col-xs-12">\n' +
+                    '<form class="form-inline" action="javascript:void(0)">\n' +
+                    '<fieldset class="form-group">\n' +
+                    '<label for="cleanup">Remove build result completely</label>\n' +
+                    '<input type="checkbox" id="cleanup" checked>\n' +
+                    '</fieldset>\n' +
+                    '</form>\n' +
+                    '</div></div>';
+            const extraModalFooter = document.getElementById('extraModalFooter');
+            extraModalFooter.innerHTML = '<button type="submit" class="btn btn-danger" id="sendRemoveQueryButton">Remove</button>';
+            const button = document.getElementById('sendRemoveQueryButton');
             button.onclick = function () {
                 sendRemoveQuery(name);
             };
