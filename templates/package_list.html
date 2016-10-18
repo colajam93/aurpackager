@@ -7,7 +7,7 @@
         <button onclick="sendSystemUpgradeQuery()" class="btn btn-primary-outline">System Upgrade</button>
         <button onclick="sendBuildUpdateQuery()" class="btn btn-primary-outline">Build Update</button>
         <button onclick="sendInstallAllQuery()" class="btn btn-primary-outline">Install All</button>
-        <button onclick="sendBuildAllQuery()" class="btn btn-primary-outline">Build All</button>
+        <button onclick="openBuildAllModal()" class="btn btn-primary-outline">Build All</button>
     </form>
 {% endblock nav %}
 
@@ -59,13 +59,29 @@
     <script type="application/javascript">
         'use strict';
 
-        function sendBuildAllQuery() {
-            $.ajax({
-                url: "{% url 'api:package_build_all' %}",
-                dataType: 'json'
-            }).then(function () {
-                window.location.reload(true);
-            });
+        function openBuildAllModal() {
+            initializeModalWindow();
+            window.event.cancelBubble = true;
+            const label = document.getElementById('modalLabel');
+            label.innerHTML = "Build All Package";
+            const content = document.getElementById('modalContent');
+            content.innerHTML = '<div class="row">\n' +
+                    '<div class="col-xs-12">\n' +
+                    'All registered packages will build.\n' +
+                    '</div></div>\n';
+            const extraModalFooter = document.getElementById('extraModalFooter');
+            extraModalFooter.innerHTML = '<button type="submit" class="btn btn-primary" id="proceedButton">Proceed</button>';
+            const button = document.getElementById('proceedButton');
+            button.onclick = function () {
+                $.ajax({
+                    url: "{% url 'api:package_build_all' %}",
+                    dataType: 'json'
+                }).then(function () {
+                    $('#modal').modal('toggle');
+                    window.location.reload(true);
+                });
+            };
+            $('#modal').modal('toggle');
         }
 
         function sendBuildUpdateQuery() {
@@ -103,6 +119,7 @@
                 $('#modal').modal('toggle');
                 window.location.reload(true);
             }).fail(function (e) {
+                initializeModalWindow();
                 var content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
             });
@@ -118,6 +135,7 @@
             }).then(function () {
                 window.location.reload(true);
             }).fail(function (e) {
+                initializeModalWindow();
                 $('#modal').modal('toggle');
                 var content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
@@ -127,13 +145,27 @@
         }
 
         function openRemoveModal(name) {
+            initializeModalWindow();
             window.event.cancelBubble = true;
-            var label = document.getElementById('modalLabel');
+            const label = document.getElementById('modalLabel');
             label.innerHTML = "Remove " + name;
-
-            var content = document.getElementById('modalContent');
-            content.innerHTML = '<div class="row">\n                    <div class="col-xs-12">\n                    Remove ' + name + '?\n                    </div></div>\n                    <div class="row">\n                    <div class="col-xs-12">\n                    <form class="form-inline" action="javascript:void(0)">\n                    <fieldset class="form-group">\n                    <button type="submit" class="btn btn-danger" id="sendRemoveQueryButton">Remove</button>\n                    <label for="cleanup">Remove build result completely</label>\n                    <input type="checkbox" id="cleanup" checked>\n                    </fieldset>\n                    </form>\n                    </div></div>';
-            var button = document.getElementById('sendRemoveQueryButton');
+            const content = document.getElementById('modalContent');
+            content.innerHTML = '<div class="row">\n' +
+                    '<div class="col-xs-12">\n' +
+                    'Remove ' + name + '?\n' +
+                    '</div></div>\n' +
+                    '<div class="row">\n' +
+                    '<div class="col-xs-12">\n' +
+                    '<form class="form-inline" action="javascript:void(0)">\n' +
+                    '<fieldset class="form-group">\n' +
+                    '<label for="cleanup">Remove build result completely</label>\n' +
+                    '<input type="checkbox" id="cleanup" checked>\n' +
+                    '</fieldset>\n' +
+                    '</form>\n' +
+                    '</div></div>';
+            const extraModalFooter = document.getElementById('extraModalFooter');
+            extraModalFooter.innerHTML = '<button type="submit" class="btn btn-danger" id="sendRemoveQueryButton">Remove</button>';
+            const button = document.getElementById('sendRemoveQueryButton');
             button.onclick = function () {
                 sendRemoveQuery(name);
             };
@@ -150,6 +182,7 @@
             }).then(function () {
                 window.location.reload(true);
             }).fail(function (e) {
+                initializeModalWindow();
                 $('#modal').modal('toggle');
                 var content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
