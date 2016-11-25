@@ -1,6 +1,11 @@
-from urllib.request import urlopen
-from contextlib import closing
 import json
+import os.path
+import subprocess
+import tempfile
+from contextlib import closing
+from urllib.request import urlopen
+
+from lib.download import save_to_file
 
 AUR_URL = 'https://aur.archlinux.org'
 BASE_URL = AUR_URL + '/rpc/?v=5&'
@@ -33,18 +38,52 @@ class AURInfo(AttrDict):
         self.aur_url = aur_package_url(self.Name)
 
 
+class DetailAURInfo(AURInfo):
+    def __init__(self, package_dict, pkgnames):
+        super().__init__(package_dict)
+        self.pkgnames = pkgnames
+
+
 def _aur_query(url):
     with closing(urlopen(url)) as request:
         result = json.loads(request.read().decode())
     return result
 
 
-def info(package):
+def info(package: str, with_detail: bool = False):
     url = INFO_URL + 'arg[]={}'.format(package)
     result = _aur_query(url)
     if result['resultcount'] == 0:
         raise PackageNotFoundError
-    return AURInfo(result['results'][0])
+    r = AURInfo(result['results'][0])
+    if with_detail:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            tar_path = os.path.join(temp_dir, 'tarball')
+            save_to_file(r.tar_url, tar_path)
+            tar_out = os.path.join(temp_dir, 'o')
+            os.mkdir(tar_out)
+            subprocess.run(['tar', 'xvf', tar_path, '-C', tar_out], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            pkgbuild = ''
+            # Only one directory exists in tar_out directory and it contains the PKGBUILD.
+            for d in (os.path.join(tar_out, f) for f in os.listdir(tar_out)):
+                if os.path.isdir(d):
+                    pkgbuild = os.path.join(d, 'PKGBUILD')
+            s = '''
+            source {pkgbuild}
+            if [[ "$(declare -p pkgname)" =~ "declare -a" ]]; then
+                printf '%s\n' "${{pkgname[@]}}"
+            else
+                echo $pkgname
+            fi
+            '''.format(pkgbuild=pkgbuild)
+            with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+                temp_file.write(s)
+                temp_file.flush()
+                completed = subprocess.run(['bash', temp_file.name], universal_newlines=True, stdout=subprocess.PIPE)
+                pkgnames = completed.stdout.strip().split('\n')
+        return DetailAURInfo(result['results'][0], pkgnames)
+    else:
+        return r
 
 
 def multiple_info(packages):
