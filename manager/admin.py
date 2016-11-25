@@ -1,5 +1,6 @@
 from django.contrib import admin
-from manager.models import Package, Build
+
+from manager.models import Package, Build, Artifact
 
 
 class PackageAdmin(admin.ModelAdmin):
@@ -14,3 +15,10 @@ class BuildAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Build, BuildAdmin)
+
+
+class ArtifactAdmin(admin.ModelAdmin):
+    list_display = ('id', 'package', 'name')
+
+
+admin.site.register(Artifact, ArtifactAdmin)
