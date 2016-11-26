@@ -42,6 +42,7 @@ def _register_status(name: str) -> (RegisterStatus, str):
             return RegisterStatus.not_registered, ''
 
 
+# TODO: Refactor too naive implementation
 def register(name: str, with_depend: bool = False) -> Dict[str, List[str]]:
     (is_registered, registered_name) = _register_status(name)
     if is_registered == RegisterStatus.package:
@@ -74,6 +75,10 @@ def register(name: str, with_depend: bool = False) -> Dict[str, List[str]]:
                 native.extend(r['native'])
                 foreign.extend(r['foreign'])
 
+    for duplicate in (set(foreign) & set(info.pkgnames)):
+        d = Package.objects.filter(name=duplicate)
+        if d.exists():
+            d.delete()
     package = Package(name=name)
     package.save()
     for pkgname in info.pkgnames:
