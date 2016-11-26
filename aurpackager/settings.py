@@ -26,11 +26,6 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
-try:
-    from aurpackager.settings_local import *
-except ImportError:
-    pass
-
 
 # Application definition
 
@@ -130,3 +125,9 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'common', 'static'),
     os.path.join(BASE_DIR, 'manager', 'static'),
 )
+
+try:
+    from aurpackager.settings_local import *
+except ImportError:
+    pass
+
