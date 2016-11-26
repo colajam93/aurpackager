@@ -1,13 +1,16 @@
-from manager.models import Package, Build
+import enum
+import itertools
+import os.path
+import shutil
+from typing import Dict, List
+
 import lib.aur as aur
 import lib.pacman.sync as sync
 import lib.pacman.upgrade as upgrade
-import itertools
-import shutil
-import os.path
-from packager.settings import BUILD_ROOT_DIR
-from packager.manager import BuilderManager
 import packager.path
+from manager.models import Package, Build, Artifact
+from packager.manager import BuilderManager
+from packager.settings import BUILD_ROOT_DIR
 
 
 class OperationError(Exception):
@@ -18,20 +21,35 @@ class OperationError(Exception):
         return repr(self.reason)
 
 
-def _is_registered(name):
-    try:
-        Package.objects.get(name=name)
-    except Package.DoesNotExist:
-        return False
+class RegisterStatus(enum.Enum):
+    package = 1
+    artifact = 2
+    not_registered = 3
+
+
+def _is_registered(name: str) -> bool:
+    return not _register_status(name)[0] == RegisterStatus.not_registered
+
+
+def _register_status(name: str) -> (RegisterStatus, str):
+    if Package.objects.filter(name=name).exists():
+        return RegisterStatus.package, name
     else:
-        return True
+        a = Artifact.objects.filter(name=name)
+        if a.exists():
+            return RegisterStatus.artifact, a[0].package.name
+        else:
+            return RegisterStatus.not_registered, ''
 
 
-def register(name, with_depend=False):
-    if _is_registered(name):
+def register(name: str, with_depend: bool = False) -> Dict[str, List[str]]:
+    (is_registered, registered_name) = _register_status(name)
+    if is_registered == RegisterStatus.package:
         raise OperationError('{} has already registered'.format(name))
+    elif is_registered == RegisterStatus.artifact:
+        raise OperationError('{} has already registered as Artifact of {}'.format(name, registered_name))
 
-    info = aur.info(name)
+    info = aur.detail_info(name)
     native = []
     foreign = []
     if with_depend:
@@ -58,6 +76,9 @@ def register(name, with_depend=False):
 
     package = Package(name=name)
     package.save()
+    for pkgname in info.pkgnames:
+        artifact = Artifact(package=package, name=pkgname)
+        artifact.save()
     ret = dict()
     ret['native'] = list(set(native))
     ret['foreign'] = list(set(foreign))
