@@ -54,10 +54,7 @@ class BuilderManager(metaclass=Singleton):
                     build.status = Build.FAILURE
             build.save()
             if SLACK_NOTIFICATION:
-                try:
-                    packager.slack.post(build)
-                except:
-                    pass
+                packager.slack.post(build)
 
             with self.lock:
                 self.building_packages.remove(builder.package_name)

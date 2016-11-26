@@ -1,25 +1,34 @@
+import json
+import urllib.error
 import urllib.parse
 import urllib.request
-import json
+
 from django.core.urlresolvers import reverse_lazy
-from manager.models import Build
+
 from lib.aur import aur_package_url
-from packager.settings import SLACK_NOTIFICATION_URL, AUR_PACKAGER_BASE_URL
+from manager.models import Build, Artifact
+from packager.settings import SLACK_NOTIFICATION_URL, AUR_PACKAGER_BASE_URL, SLACK_NOTIFICATION
 
 
-def post(build):
-    assert SLACK_NOTIFICATION_URL
-    assert AUR_PACKAGER_BASE_URL
+def post(build: Build):
+    if not SLACK_NOTIFICATION and SLACK_NOTIFICATION_URL and AUR_PACKAGER_BASE_URL:
+        return
     detail_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_detail',
                                                           kwargs={'package_name': build.package.name,
                                                                   'build_number': 1}))
-    download_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_download',
-                                                            kwargs={'package_name': build.package.name,
-                                                                    'build_number': 1}))
-    text = '{}: {} <{}|Detail> <{}|Download> <{}|AUR>\nsha256: {}'.format(build.status, build.package.name, detail_url,
-                                                                          download_url,
-                                                                          aur_package_url(build.package.name),
-                                                                          build.sha256)
+    sha256s = json.loads(build.sha256)
+    artifacts = []
+    for artifact in Artifact.objects.filter(package=build.package):
+        download_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_download',
+                                                                kwargs={'package_name': artifact.name,
+                                                                        'build_number': 1}))
+        sha256 = sha256s[artifact.name]
+        s = '<{}|{}> sha256: {}'.format(download_url, artifact.name, sha256)
+        artifacts.append(s)
+    base = '{}: <{}|Detail> <{}|AUR>'.format(build.status, detail_url,
+                                             aur_package_url(build.package.name))
+    text = '\n'.join([base] + artifacts)
+
     if build.status == Build.SUCCESS:
         emoji = ':+1:'
     else:
@@ -29,4 +38,7 @@ def post(build):
     data = {'text': text, 'username': name, 'icon_emoji': emoji}
     request = urllib.request.Request(SLACK_NOTIFICATION_URL)
     request.add_header('Content-type', 'application/json')
-    urllib.request.urlopen(request, json.dumps(data).encode())
+    try:
+        urllib.request.urlopen(request, json.dumps(data).encode())
+    except urllib.error.URLError:
+        pass
