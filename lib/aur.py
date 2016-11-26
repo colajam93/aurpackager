@@ -50,25 +50,28 @@ def _aur_query(url):
     return result
 
 
-def info(package: str, with_detail: bool = False):
+def info(package: str) -> AURInfo:
     url = INFO_URL + 'arg[]={}'.format(package)
     result = _aur_query(url)
     if result['resultcount'] == 0:
         raise PackageNotFoundError
-    r = AURInfo(result['results'][0])
-    if with_detail:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            tar_path = os.path.join(temp_dir, 'tarball')
-            save_to_file(r.tar_url, tar_path)
-            tar_out = os.path.join(temp_dir, 'o')
-            os.mkdir(tar_out)
-            subprocess.run(['tar', 'xvf', tar_path, '-C', tar_out], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            pkgbuild = ''
-            # Only one directory exists in tar_out directory and it contains the PKGBUILD.
-            for d in (os.path.join(tar_out, f) for f in os.listdir(tar_out)):
-                if os.path.isdir(d):
-                    pkgbuild = os.path.join(d, 'PKGBUILD')
-            s = '''
+    return AURInfo(result['results'][0])
+
+
+def detail_info(package: str) -> DetailAURInfo:
+    info_ = info(package)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        tar_path = os.path.join(temp_dir, 'tarball')
+        save_to_file(info_.tar_url, tar_path)
+        tar_out = os.path.join(temp_dir, 'o')
+        os.mkdir(tar_out)
+        subprocess.run(['tar', 'xvf', tar_path, '-C', tar_out], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        pkgbuild = ''
+        # Only one directory exists in tar_out directory and it contains the PKGBUILD.
+        for d in (os.path.join(tar_out, f) for f in os.listdir(tar_out)):
+            if os.path.isdir(d):
+                pkgbuild = os.path.join(d, 'PKGBUILD')
+        s = '''
             source {pkgbuild}
             if [[ "$(declare -p pkgname)" =~ "declare -a" ]]; then
                 printf '%s\n' "${{pkgname[@]}}"
@@ -76,14 +79,12 @@ def info(package: str, with_detail: bool = False):
                 echo $pkgname
             fi
             '''.format(pkgbuild=pkgbuild)
-            with tempfile.NamedTemporaryFile(mode='w') as temp_file:
-                temp_file.write(s)
-                temp_file.flush()
-                completed = subprocess.run(['bash', temp_file.name], universal_newlines=True, stdout=subprocess.PIPE)
-                pkgnames = completed.stdout.strip().split('\n')
-        return DetailAURInfo(result['results'][0], pkgnames)
-    else:
-        return r
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            temp_file.write(s)
+            temp_file.flush()
+            completed = subprocess.run(['bash', temp_file.name], universal_newlines=True, stdout=subprocess.PIPE)
+            pkgnames = completed.stdout.strip().split('\n')
+    return DetailAURInfo(info_, pkgnames)
 
 
 def multiple_info(packages):
