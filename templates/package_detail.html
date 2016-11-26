@@ -9,16 +9,54 @@
         <div class="col-xs-12">
             <a class="btn btn-secondary" href="{% url 'manager:package_list' %}">Back
                 to Package List</a>
-            <a onclick="sendInstallQuery()"
-               class="btn btn-primary">Install Latest</a>
+            {% if package.ignore %}
+                <button type="submit" class="btn btn-primary"
+                        onclick="sendIgnoreQuery('{{ package.name }}')">
+                    Disable ignore
+                </button>
+            {% else %}
+                <button type="submit" class="btn btn-primary"
+                        onclick="sendIgnoreQuery('{{ package.name }}')">
+                    Enable ignore
+                </button>
+            {% endif %}
             <button type="submit" class="btn btn-primary"
                     onclick="sendBuildQuery()">
                 Build
             </button>
             <a href="{% aur_package_url package.name %}"
-               class="btn btn-primary">AUR</a>
+               class="btn btn-info">AUR</a>
         </div>
     </div>
+    <h4>Latest Artifacts</h4>
+    <div class="row">
+        <div class="col-xs-12">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Operation</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for artifact in artifacts %}
+                    <tr>
+                        <td>{{ artifact.name }}</td>
+                        <td>
+                            <a class="btn btn-primary"
+                               href="{% url 'manager:build_download' package_name=artifact.name build_number=1 %}"
+                               download>Download</a>
+                            <button onclick="sendInstallQuery('{{ artifact.name }}')"
+                                    class="btn btn-primary">Install to server
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <h4>Builds</h4>
     <div class="row">
         <div class="col-xs-12">
             <table class="table table-striped table-bordered table-hover">
@@ -28,7 +66,6 @@
                     <th>Date</th>
                     <th>Version</th>
                     <th>Status</th>
-                    <th>Operation</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -39,13 +76,6 @@
                         <td>{{ build.date }}</td>
                         <td>{{ build.version }}</td>
                         <td>{{ build.status }}</td>
-                        <td>
-                            <a class="btn btn-primary"
-                               href="{% url 'manager:build_download' package_name=package.name build_number=build.number %}"
-                               onclick="window.event.cancelBubble = true;"
-                               download>Download
-                            </a>
-                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -55,17 +85,17 @@
     <script type="application/javascript">
         "use strict";
 
-        function sendInstallQuery() {
+        function sendInstallQuery(name) {
             $.ajax({
                 type: 'POST',
                 url: "{% url 'api:package_install' %}",
-                data: {"name": "{{ package.name }}"},
+                data: {"name": name},
                 dataType: 'json'
-            }).fail(function (e) {
+            }).fail((e) => {
                 $('#modal').modal('toggle');
-                var content = document.getElementById('modalContent');
+                const content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
-                var label = document.getElementById('modalLabel');
+                const label = document.getElementById('modalLabel');
                 label.innerHTML = "Error";
             });
         }
@@ -77,13 +107,31 @@
                 url: "{% url 'api:package_build' %}",
                 data: {"name": "{{ package.name }}"},
                 dataType: 'json'
-            }).then(function () {
+            }).then(() => {
                 window.location.reload(true);
-            }).fail(function (e) {
+            }).fail((e) => {
                 $('#modal').modal('toggle');
-                var content = document.getElementById('modalContent');
+                const content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
-                var label = document.getElementById('modalLabel');
+                const label = document.getElementById('modalLabel');
+                label.innerHTML = "Error";
+            });
+        }
+
+        function sendIgnoreQuery(name) {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:toggle_ignore' %}",
+                data: {"name": name},
+                dataType: 'json'
+            }).then(() => {
+                window.location.reload(true);
+            }).fail((e) => {
+                initializeModalWindow();
+                $('#modal').modal('toggle');
+                const content = document.getElementById('modalContent');
+                content.innerHTML = e.responseText;
+                const label = document.getElementById('modalLabel');
                 label.innerHTML = "Error";
             });
         }

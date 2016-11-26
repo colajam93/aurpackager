@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
-from manager.models import Package, Build
-from django.http import HttpResponse
 import os.path
+
 from django.core.files import File
-import packager.path
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
+
+import packager.path
+from manager.models import Package, Build, Artifact
 
 
 @ensure_csrf_cookie
@@ -24,9 +26,14 @@ def package_list(request):
 def package_detail(request, package_name):
     package = Package.objects.get(name=package_name)
     builds = Build.objects.filter(package_id=package.id).order_by('-id')
+    if Build.objects.filter(package_id=package.id, status=Build.SUCCESS).exists():
+        artifacts = Artifact.objects.filter(package=package)
+    else:
+        artifacts = []
     for build, number in zip(builds, range(1, len(builds) + 1)):
         build.number = number
-    return render(request, 'package_detail.html', {'package': package, 'builds': builds, 'active': 'list'})
+    return render(request, 'package_detail.html',
+                  {'package': package, 'builds': builds, 'active': 'list', 'artifacts': artifacts})
 
 
 @ensure_csrf_cookie
@@ -63,9 +70,9 @@ def build_detail(request, package_name, build_number):
 
 @ensure_csrf_cookie
 def build_download(request, package_name, build_number):
-    package = Package.objects.get(name=package_name)
+    artifact = Artifact.objects.get(name=package_name)
     try:
-        build = Build.objects.filter(package_id=package.id).order_by('-id')[int(build_number) - 1]
+        build = Build.objects.filter(package_id=artifact.package.id).order_by('-id')[int(build_number) - 1]
     except IndexError:
         build = None
     if build and build.status == Build.SUCCESS:
