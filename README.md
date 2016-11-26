@@ -9,6 +9,8 @@ AUR package build server using Django.
 
 ## Install
 
+In the following description, we use `packager` user.
+
 - Create build user
 
 ```
@@ -45,8 +47,12 @@ $ uwsgi --ini /home/packager/aurpackager/aurpackager.ini
 
 ## Automatic update checking
 
-Use `build_all` api.
-See `auto-update.py`.
+Call `build_all` API and `only_update` option with cron.
+This option builds packages which have update.
+
+```
+https://aurpackager.yourdomain/api/build_all/?only_update=true
+```
 
 ## Slack Notification
 
@@ -57,7 +63,6 @@ SLACK_NOTIFICATION = True
 SLACK_NOTIFICATION_URL = 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'  # REQUIRED FOR SLACK_NOTIFICATION
 AUR_PACKAGER_BASE_URL = 'https://aurpackager.yourdomain'  # REQUIRED FOR SLACK_NOTIFICATION
 ```
-
 
 ## License
 
