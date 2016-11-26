@@ -77,7 +77,7 @@ def build_download(request, package_name, build_number):
         build = None
     if build and build.status == Build.SUCCESS:
         path = packager.path.build_to_path(build)
-        result_file = path.result_file
+        result_file = path.artifact_file(artifact.name)
         with open(result_file, 'rb') as f:
             ff = File(f)
             response = HttpResponse(ff, content_type='application/x-xz')
