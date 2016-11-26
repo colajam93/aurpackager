@@ -1,5 +1,8 @@
 import os.path
+
 from packager.settings import BUILD_ROOT_DIR
+
+DEST_DIR_NAME = '_dest'
 
 
 # path structure:
@@ -12,7 +15,7 @@ class Path:
         build_dir = os.path.join(base, name, version, date)
         self.name = name
         self.build_dir = build_dir.translate(str.maketrans(':', '_'))
-        self.dest_dir = os.path.join(self.build_dir, '_dest')
+        self.dest_dir = os.path.join(self.build_dir, DEST_DIR_NAME)
 
     @property
     def tar_file(self):
