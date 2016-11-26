@@ -1,6 +1,8 @@
+import json
 import os.path
 
 from django.core.files import File
+from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -63,9 +65,19 @@ def build_detail(request, package_name, build_number):
         except FileNotFoundError:
             pass
     is_success = build.status == Build.SUCCESS
+    artifacts = []
+    try:
+        sha256s = json.loads(build.sha256)
+    except json.JSONDecodeError:
+        sha256s = {}
+    for artifact in Artifact.objects.filter(package=package):
+        a = model_to_dict(artifact)
+        a['sha256'] = sha256s.get(a['name'], '')
+        artifacts.append(a)
+
     return render(request, 'build_detail.html',
                   {'build': build, 'package': build.package, 'log': log, 'is_success': is_success,
-                   'active': 'list'})
+                   'active': 'list', 'artifacts': artifacts})
 
 
 @ensure_csrf_cookie

@@ -8,11 +8,6 @@
         <div class="col-xs-12">
             <a class="btn btn-secondary" href="{% url 'manager:package_detail' package_name=package.name %}">Back
                 to Package Detail</a>
-            {% if is_success %}
-                <a class="btn btn-primary"
-                   href="{% url 'manager:build_download' package_name=package.name build_number=build.number %}"
-                   download>Download</a>
-            {% endif %}
         </div>
     </div>
     <div class="row">
@@ -30,10 +25,36 @@
                     <th>Status</th>
                     <td>{{ build.status }}</td>
                 </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <h4>Artifacts</h4>
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
                 <tr>
+                    <th>Name</th>
                     <th>sha256</th>
-                    <td>{{ build.sha256 }}</td>
+                    <th>Operation</th>
                 </tr>
+                </thead>
+                <tbody>
+                {% for artifact in artifacts %}
+                    <tr>
+                        <td>{{ artifact.name }}</td>
+                        <td>{{ artifact.sha256 }}</td>
+                        <td>
+                            {% if is_success %}
+                                <a class="btn btn-primary"
+                                   href="{% url 'manager:build_download' package_name=artifact.name build_number=build.number %}"
+                                   download>Download</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
