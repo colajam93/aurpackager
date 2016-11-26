@@ -204,3 +204,4 @@ manager/static/css/
 aurpackager.log
 aurpackager.sock
 /packager/settings_local.py
+/aurpackager/settings_local.py
