@@ -36,6 +36,10 @@ $ ./manage.py migrate
 $ ./manage.py collectstatic --no-input
 ```
 
+- Configuration
+
+Copy `packager/settings_local.py.template` to `packager/settings_local.py` and edit it.
+
 - Run server
 
 Run development server or deploy to WSGI environment.
@@ -56,7 +60,7 @@ https://aurpackager.yourdomain/api/build_all/?only_update=true
 
 ## Slack Notification
 
-Enable Incoming Webhooks and edit `packager/settings.py` as follows.
+Enable Incoming Webhooks and edit `packager/settings_local.py` as follows.
 
 ```
 SLACK_NOTIFICATION = True
