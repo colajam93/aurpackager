@@ -48,6 +48,9 @@ tar xvf {package_name}
 cd $(ls -d */ | grep -v "{dest_dir_name}")
 export PKGDEST='{dest}'
 makepkg -s --noconfirm
+workdir=$(pwd)
+cd ..
+rm -rf ${{workdir}}
 '''
         with open(path.script_file, 'w') as f:
             f.write(build_script.format(build_dir=build_dir, package_name=self.package_name, dest=dest_dir,
