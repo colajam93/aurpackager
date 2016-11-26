@@ -24,6 +24,10 @@
                     onclick="sendBuildQuery()">
                 Build
             </button>
+            <button type="submit" class="btn btn-danger"
+                    onclick="openRemoveModal('{{ package.name }}')">
+                Remove
+            </button>
             <a href="{% aur_package_url package.name %}"
                class="btn btn-info">AUR</a>
         </div>
@@ -134,6 +138,50 @@
                 const label = document.getElementById('modalLabel');
                 label.innerHTML = "Error";
             });
+        }
+
+        function sendRemoveQuery(name) {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:package_remove' %}",
+                data: {"name": name, "cleanup": document.getElementById('cleanup').checked},
+                dataType: 'json'
+            }).then(() => {
+                $('#modal').modal('toggle');
+                window.location.href = {% url 'manager:package_list' %};
+            }).fail((e) => {
+                initializeModalWindow();
+                const content = document.getElementById('modalContent');
+                content.innerHTML = e.responseText;
+            });
+        }
+
+        function openRemoveModal(name) {
+            initializeModalWindow();
+            window.event.cancelBubble = true;
+            const label = document.getElementById('modalLabel');
+            label.innerHTML = "Remove " + name;
+            const content = document.getElementById('modalContent');
+            content.innerHTML = '<div class="row">\n' +
+                '<div class="col-xs-12">\n' +
+                'Remove ' + name + '?\n' +
+                '</div></div>\n' +
+                '<div class="row">\n' +
+                '<div class="col-xs-12">\n' +
+                '<form class="form-inline" action="javascript:void(0)">\n' +
+                '<fieldset class="form-group">\n' +
+                '<label for="cleanup">Remove build result completely</label>\n' +
+                '<input type="checkbox" id="cleanup" checked>\n' +
+                '</fieldset>\n' +
+                '</form>\n' +
+                '</div></div>';
+            const extraModalFooter = document.getElementById('extraModalFooter');
+            extraModalFooter.innerHTML = '<button type="submit" class="btn btn-danger" id="sendRemoveQueryButton">Remove</button>';
+            const button = document.getElementById('sendRemoveQueryButton');
+            button.onclick = function () {
+                sendRemoveQuery(name);
+            };
+            $('#modal').modal('toggle');
         }
     </script>
 {% endblock content %}
