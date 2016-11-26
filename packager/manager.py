@@ -1,14 +1,17 @@
-from packager.builder import Builder, BuilderError
-import threading
+import json
 import queue
+import threading
 import time
-from lib.singleton import Singleton
-from manager.models import Build
+
 import django.utils.timezone as timezone
-import packager.path
+
 import lib.digest as digest
-from packager.settings import SLACK_NOTIFICATION
+import packager.path
 import packager.slack
+from lib.singleton import Singleton
+from manager.models import Build, Artifact
+from packager.builder import Builder, BuilderError
+from packager.settings import SLACK_NOTIFICATION
 
 
 class BuilderManager(metaclass=Singleton):
@@ -41,12 +44,14 @@ class BuilderManager(metaclass=Singleton):
                 build.version = builder.version
             if not build.status == build.FAILURE:
                 try:
-                    result_file = packager.path.build_to_path(build).result_file
+                    path = packager.path.build_to_path(build)
+                    d = {}
+                    for pkgname in Artifact.objects.filter(package=build.package):
+                        d[pkgname.name] = digest.sha256(path.artifact_file(pkgname.name))
+                    build.status = Build.SUCCESS
+                    build.sha256 = json.dumps(d)
                 except FileNotFoundError:
                     build.status = Build.FAILURE
-                else:
-                    build.status = Build.SUCCESS
-                    build.sha256 = digest.sha256(result_file)
             build.save()
             if SLACK_NOTIFICATION:
                 try:
