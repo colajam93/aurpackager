@@ -51,6 +51,9 @@ makepkg -s --noconfirm
 workdir=$(pwd)
 cd ..
 rm -rf ${{workdir}}
+if [[ -e {package_name} ]]; then
+    rm -f {package_name}
+fi
 '''
         with open(path.script_file, 'w') as f:
             f.write(build_script.format(build_dir=build_dir, package_name=self.package_name, dest=dest_dir,
