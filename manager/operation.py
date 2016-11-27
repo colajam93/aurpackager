@@ -90,7 +90,7 @@ def register(name: str, with_depend: bool = False) -> Dict[str, List[str]]:
     return ret
 
 
-def remove(name, cleanup=False):
+def remove_package(name, cleanup=False):
     if not _is_registered(name):
         raise OperationError('{} has not registered'.format(name))
 

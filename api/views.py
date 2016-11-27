@@ -73,7 +73,7 @@ def package_remove(params, **kwargs):
     cleanup = kwargs['cleanup'] == 'true'
     ret = dict()
     try:
-        operation.remove(params['name'], cleanup=cleanup)
+        operation.remove_package(params['name'], cleanup=cleanup)
     except operation.OperationError as e:
         ret['result'] = False
         ret['detail'] = str(e)
