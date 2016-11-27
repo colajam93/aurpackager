@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{ package.name }} - Build Log{% endblock title %}
+
+{% block content %}
+    <h3>{{ package.name }}</h3>
+    <div class="row">
+        <div class="col-xs-12">
+            <a class="btn btn-secondary"
+               href="{% url 'manager:build_detail' package_name=package.name build_number=build.number %}">Back
+                to Build Detail</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <h4>Build Log</h4>
+            <pre class="bg-faded">
+                {{ log | safe }}
+            </pre>
+        </div>
+    </div>
+{% endblock content %}

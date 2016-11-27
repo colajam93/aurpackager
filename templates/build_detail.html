@@ -8,6 +8,10 @@
         <div class="col-xs-12">
             <a class="btn btn-secondary" href="{% url 'manager:package_detail' package_name=package.name %}">Back
                 to Package Detail</a>
+            <a class="btn btn-primary"
+               href="{% url 'manager:build_log' package_name=package.name build_number=build.number %}">
+                Log
+            </a>
             <button class="btn btn-danger" onclick="openRemoveBuildModal('{{ package.name }}', '{{ build.number }}')">
                 Remove
             </button>
@@ -59,14 +63,6 @@
                 {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12">
-            <h4>Build Log</h4>
-            <pre class="bg-faded">
-                {{ log | safe }}
-            </pre>
         </div>
     </div>
     <script>

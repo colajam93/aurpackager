@@ -56,14 +56,6 @@ def build_detail(request, package_name, build_number):
         build.number = build_number
     except IndexError:
         return redirect('manager:package_list')
-    path = packager.path.build_to_path(build)
-    log = ''
-    if not build.status == Build.BUILDING:
-        try:
-            with open(path.log_file, 'r') as f:
-                log = f.read()
-        except FileNotFoundError:
-            pass
     is_success = build.status == Build.SUCCESS
     artifacts = []
     try:
@@ -76,8 +68,8 @@ def build_detail(request, package_name, build_number):
         artifacts.append(a)
 
     return render(request, 'build_detail.html',
-                  {'build': build, 'package': build.package, 'log': log, 'is_success': is_success,
-                   'active': 'list', 'artifacts': artifacts})
+                  {'build': build, 'package': build.package, 'is_success': is_success, 'active': 'list',
+                   'artifacts': artifacts})
 
 
 @ensure_csrf_cookie
@@ -96,5 +88,25 @@ def build_download(request, package_name, build_number):
             response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(result_file))
             response['Content-Length'] = ff.size
             return response
+    else:
+        return HttpResponse(status=404)
+
+
+@ensure_csrf_cookie
+def build_log(request, package_name, build_number):
+    try:
+        build = Build.objects.filter(package__name=package_name).order_by('-id')[int(build_number) - 1]
+        build.number = build_number
+    except IndexError:
+        build = None
+    if build and not build.status == Build.BUILDING:
+        path = packager.path.build_to_path(build)
+        try:
+            with open(path.log_file, 'r') as f:
+                log = f.read()
+        except FileNotFoundError:
+            log = ''
+        return render(request, 'build_log.html',
+                      {'build': build, 'package': build.package, 'log': log, 'active': 'list'})
     else:
         return HttpResponse(status=404)

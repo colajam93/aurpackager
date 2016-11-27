@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 from manager import views
 
 _PACKAGE_NAME_REGEX = r'(?P<package_name>[a-zA-Z0-9_+-]+)'
@@ -14,4 +15,5 @@ urlpatterns = [
     url(r'^{name}/$'.format(**_REGEX), views.package_detail, name='package_detail'),
     url(r'^{name}/{number}/$'.format(**_REGEX), views.build_detail, name='build_detail'),
     url(r'^{name}/{number}/download/$'.format(**_REGEX), views.build_download, name='build_download'),
+    url(r'^{name}/{number}/log/$'.format(**_REGEX), views.build_log, name='build_log'),
 ]
