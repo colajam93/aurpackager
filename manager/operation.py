@@ -102,16 +102,37 @@ def remove_package(name, cleanup=False):
     package.delete()
 
 
+def _remove_build(build_: Build) -> None:
+    path = build_to_path(build_)
+    shutil.rmtree(path.build_dir, ignore_errors=True)
+    build_.delete()
+
+
 def remove_build(name: str, build_number: int) -> None:
     if not _is_registered(name):
         raise OperationError('{} has not registered'.format(name))
     try:
         build_ = Build.objects.filter(package__name=name).order_by('-id')[build_number - 1]
-        path = build_to_path(build_)
-        shutil.rmtree(path.build_dir, ignore_errors=True)
-        build_.delete()
+        _remove_build(build_)
     except IndexError:
         raise OperationError('{} build {} is not existed'.format(name, build_number))
+
+
+def cleanup(name: str) -> None:
+    if not _is_registered(name):
+        raise OperationError('{} has not registered'.format(name))
+    for build_ in Build.objects.filter(package__name=name, status=Build.FAILURE):
+        _remove_build(build_)
+    try:
+        for build_ in Build.objects.filter(package__name=name, status=Build.SUCCESS).order_by('-id')[1:]:
+            _remove_build(build_)
+    except IndexError:
+        pass
+
+
+def cleanup_all() -> None:
+    for package in Package.objects.all():
+        cleanup(package.name)
 
 
 def build(name):

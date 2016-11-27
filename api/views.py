@@ -98,6 +98,31 @@ def remove_build(params):
 
 
 @make_api(require=['name'], error_check=True)
+def cleanup(params):
+    ret = {}
+    try:
+        operation.cleanup(params['name'])
+        ret['result'] = True
+        ret['name'] = params['name']
+    except operation.OperationError as e:
+        ret['result'] = False
+        ret['detail'] = str(e)
+    return ret
+
+
+@make_api(error_check=True)
+def cleanup_all(_):
+    ret = {}
+    try:
+        operation.cleanup_all()
+        ret['result'] = True
+    except operation.OperationError as e:
+        ret['result'] = False
+        ret['detail'] = str(e)
+    return ret
+
+
+@make_api(require=['name'], error_check=True)
 def package_build(params):
     ret = dict()
     try:

@@ -24,6 +24,10 @@
                     onclick="sendBuildQuery()">
                 Build
             </button>
+            <button type="submit" class="btn btn-primary"
+                    onclick="openCleanupModal('{{ package.name }}')">
+                Cleanup
+            </button>
             <button type="submit" class="btn btn-danger"
                     onclick="openRemoveModal('{{ package.name }}')">
                 Remove
@@ -138,6 +142,42 @@
                 window.location.reload(true);
             }).fail((e) => {
                 initializeModalWindow();
+                $('#modal').modal('toggle');
+                const content = document.getElementById('modalContent');
+                content.innerHTML = e.responseText;
+                const label = document.getElementById('modalLabel');
+                label.innerHTML = "Error";
+            });
+        }
+
+        function openCleanupModal(name) {
+            initializeModalWindow();
+            window.event.cancelBubble = true;
+            const label = document.getElementById('modalLabel');
+            label.innerHTML = "Cleanup " + name;
+            const content = document.getElementById('modalContent');
+            content.innerHTML = '<div class="row">\n' +
+                '<div class="col-xs-12">\n' +
+                'Remove failure and old success build?\n' +
+                '</div></div>\n';
+            const extraModalFooter = document.getElementById('extraModalFooter');
+            extraModalFooter.innerHTML = '<button type="submit" class="btn btn-primary" id="sendRemoveQueryButton">Cleanup</button>';
+            const button = document.getElementById('sendRemoveQueryButton');
+            button.onclick = function () {
+                sendCleanupQuery(name);
+            };
+            $('#modal').modal('toggle');
+        }
+
+        function sendCleanupQuery() {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:cleanup' %}",
+                data: {"name": "{{ package.name }}"},
+                dataType: 'json'
+            }).then(() => {
+                window.location.reload(true);
+            }).fail((e) => {
                 $('#modal').modal('toggle');
                 const content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
