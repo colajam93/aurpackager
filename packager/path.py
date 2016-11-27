@@ -1,5 +1,6 @@
 import os.path
 
+from manager.models import Artifact
 from packager.settings import BUILD_ROOT_DIR
 
 DEST_DIR_NAME = '_dest'
@@ -22,11 +23,19 @@ class Path:
         return os.path.join(self.build_dir, self.name)
 
     def artifact_file(self, name):
-        try:
-            fn = next(fn for fn in os.listdir(self.dest_dir) if fn.startswith(name))
-        except StopIteration:
-            raise FileNotFoundError
-        return os.path.join(self.dest_dir, fn)
+        fns = [fn for fn in os.listdir(self.dest_dir) if
+               fn.startswith('{}-'.format(name)) and fn.endswith('.pkg.tar.xz')]
+        if len(fns) == 1:  # success to find unique pkg
+            return os.path.join(self.dest_dir, fns[0])
+        else:  # there are multiple candidates for path
+            artifact_names = map(lambda x: x.name, Artifact.objects.filter(package__name=self.name).exclude(
+                name=name))  # get artifact names exclude required one
+            for an in artifact_names:  # exclude not required names from candidates
+                fns = [f for f in fns if not f.startswith(an)]
+            if len(fns) == 1:
+                return os.path.join(self.dest_dir, fns[0])
+            else:
+                raise FileNotFoundError
 
     @property
     def log_file(self):
