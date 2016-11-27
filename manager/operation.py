@@ -154,7 +154,7 @@ def install(name):
         try:
             path = packager.path.build_to_path(build_)
             sync.system_upgrade()
-            completed = upgrade.install(path.result_file)
+            completed = upgrade.install(path.artifact_file(name))
             if completed.returncode:
                 raise OperationError(
                     'stdout:\n{}\n\nstderr\n:{}'.format(completed.stdout.decode(), completed.stderr.decode()))

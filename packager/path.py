@@ -29,15 +29,6 @@ class Path:
         return os.path.join(self.dest_dir, fn)
 
     @property
-    def result_file(self):
-        dest_list = os.listdir(self.dest_dir)
-        try:
-            dest_filename = next(x for x in dest_list if x.endswith('pkg.tar.xz'))
-        except StopIteration:  # not found
-            raise FileNotFoundError
-        return os.path.join(self.dest_dir, dest_filename)
-
-    @property
     def log_file(self):
         return os.path.join(self.dest_dir, 'build.log')
 
