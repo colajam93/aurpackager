@@ -8,6 +8,9 @@
         <div class="col-xs-12">
             <a class="btn btn-secondary" href="{% url 'manager:package_detail' package_name=package.name %}">Back
                 to Package Detail</a>
+            <button class="btn btn-danger" onclick="openRemoveBuildModal('{{ package.name }}', '{{ build.number }}')">
+                Remove
+            </button>
         </div>
     </div>
     <div class="row">
@@ -66,4 +69,40 @@
             </pre>
         </div>
     </div>
+    <script>
+        function sendRemoveBuildQuery(name, number) {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:remove_build' %}",
+                data: {"name": name, "number": number},
+                dataType: 'json'
+            }).then(() => {
+                $('#modal').modal('toggle');
+                window.location.href = "{% url 'manager:package_detail' package_name=package.name %}";
+            }).fail((e) => {
+                initializeModalWindow();
+                const content = document.getElementById('modalContent');
+                content.innerHTML = e.responseText;
+            });
+        }
+
+        function openRemoveBuildModal(name, number) {
+            initializeModalWindow();
+            window.event.cancelBubble = true;
+            const label = document.getElementById('modalLabel');
+            label.innerHTML = "Remove " + name + ' build ' + number;
+            const content = document.getElementById('modalContent');
+            content.innerHTML = '<div class="row">\n' +
+                '<div class="col-xs-12">\n' +
+                'Remove ' + name + ' build ' + number + '?\n' +
+                '</div></div>\n';
+            const extraModalFooter = document.getElementById('extraModalFooter');
+            extraModalFooter.innerHTML = '<button type="submit" class="btn btn-danger" id="sendRemoveQueryButton">Remove</button>';
+            const button = document.getElementById('sendRemoveQueryButton');
+            button.onclick = function () {
+                sendRemoveBuildQuery(name, number);
+            };
+            $('#modal').modal('toggle');
+        }
+    </script>
 {% endblock content %}
