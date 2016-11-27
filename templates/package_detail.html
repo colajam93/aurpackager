@@ -70,6 +70,7 @@
                     <th>Date</th>
                     <th>Version</th>
                     <th>Status</th>
+                    <th>Operation</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -80,6 +81,11 @@
                         <td>{{ build.date }}</td>
                         <td>{{ build.version }}</td>
                         <td>{{ build.status }}</td>
+                        <td>
+                            <button class="btn btn-danger"
+                                    onclick="openRemoveBuildModal('{{ package.name }}', '{{ build.number }}')">Remove
+                            </button>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -154,6 +160,41 @@
                 const content = document.getElementById('modalContent');
                 content.innerHTML = e.responseText;
             });
+        }
+
+        function sendRemoveBuildQuery(name, number) {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'api:remove_build' %}",
+                data: {"name": name, "number": number},
+                dataType: 'json'
+            }).then(() => {
+                $('#modal').modal('toggle');
+                window.location.reload(true);
+            }).fail((e) => {
+                initializeModalWindow();
+                const content = document.getElementById('modalContent');
+                content.innerHTML = e.responseText;
+            });
+        }
+
+        function openRemoveBuildModal(name, number) {
+            initializeModalWindow();
+            window.event.cancelBubble = true;
+            const label = document.getElementById('modalLabel');
+            label.innerHTML = "Remove " + name + ' build ' + number;
+            const content = document.getElementById('modalContent');
+            content.innerHTML = '<div class="row">\n' +
+                '<div class="col-xs-12">\n' +
+                'Remove ' + name + ' build ' + number + '?\n' +
+                '</div></div>\n';
+            const extraModalFooter = document.getElementById('extraModalFooter');
+            extraModalFooter.innerHTML = '<button type="submit" class="btn btn-danger" id="sendRemoveQueryButton">Remove</button>';
+            const button = document.getElementById('sendRemoveQueryButton');
+            button.onclick = function () {
+                sendRemoveBuildQuery(name, number);
+            };
+            $('#modal').modal('toggle');
         }
 
         function openRemoveModal(name) {

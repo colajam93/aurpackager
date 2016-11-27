@@ -83,6 +83,20 @@ def package_remove(params, **kwargs):
     return ret
 
 
+@make_api(require=['name', 'number'], error_check=True)
+def remove_build(params):
+    ret = {}
+    try:
+        operation.remove_build(params['name'], int(params['number']))
+        ret['result'] = True
+        ret['name'] = params['name']
+        ret['number'] = params['number']
+    except operation.OperationError as e:
+        ret['result'] = False
+        ret['detail'] = str(e)
+    return ret
+
+
 @make_api(require=['name'], error_check=True)
 def package_build(params):
     ret = dict()
