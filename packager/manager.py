@@ -6,12 +6,13 @@ import time
 import django.utils.timezone as timezone
 
 import lib.digest as digest
+import packager.local_repository
 import packager.path
 import packager.slack
 from lib.singleton import Singleton
 from manager.models import Build, Artifact
 from packager.builder import Builder, BuilderError
-from packager.settings import SLACK_NOTIFICATION
+from packager.settings import SLACK_NOTIFICATION, CUSTOM_LOCAL_REPOSITORY
 
 
 class BuilderManager(metaclass=Singleton):
@@ -55,6 +56,8 @@ class BuilderManager(metaclass=Singleton):
             build.save()
             if SLACK_NOTIFICATION:
                 packager.slack.post(build)
+            if CUSTOM_LOCAL_REPOSITORY:
+                packager.local_repository.update_repository(build)
 
             with self.lock:
                 self.building_packages.remove(builder.package_name)
