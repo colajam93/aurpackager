@@ -1,7 +1,7 @@
 import json
 import os.path
 from datetime import datetime
-from typing import Union, Optional
+from typing import Union
 
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, FileResponse, HttpRequest
@@ -127,15 +127,9 @@ def build_download(request: HttpRequest, package_name: str, build_number: str) -
         return HttpResponse(status=404)
 
 
-_repository_condition_datetime_cache: Optional[datetime] = None
-
-
 def _repository_condition_func(request: HttpRequest, file_name: str) -> datetime:
-    global _repository_condition_datetime_cache
-    if not _repository_condition_datetime_cache:
-        path = os.path.join(CUSTOM_LOCAL_REPOSITORY_DIR, file_name)
-        _repository_condition_datetime_cache = datetime.utcfromtimestamp(os.path.getmtime(path))
-    return _repository_condition_datetime_cache
+    path = os.path.join(CUSTOM_LOCAL_REPOSITORY_DIR, file_name)
+    return datetime.utcfromtimestamp(os.path.getmtime(path))
 
 
 def _repository_last_modified_func(request: HttpRequest, file_name: str) -> datetime:
