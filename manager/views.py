@@ -3,12 +3,13 @@ import os.path
 
 from django.core.files import File
 from django.forms.models import model_to_dict
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 import packager.path
 from manager.models import Package, Build, Artifact
+from packager.settings_local import CUSTOM_LOCAL_REPOSITORY_DIR, CUSTOM_LOCAL_REPOSITORY
 
 
 @ensure_csrf_cookie
@@ -110,3 +111,20 @@ def build_log(request, package_name, build_number):
                       {'build': build, 'package': build.package, 'log': log, 'active': 'list'})
     else:
         return HttpResponse(status=404)
+
+
+@ensure_csrf_cookie
+def repository(request, file_name: str):
+    if not CUSTOM_LOCAL_REPOSITORY:
+        return HttpResponse(status=404)
+    path = os.path.join(CUSTOM_LOCAL_REPOSITORY_DIR, file_name)
+    try:
+        f = open(path, 'rb')
+        response = FileResponse(f, content_type='application/x-xz')
+        response['Content-Length'] = os.path.getsize(path)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
+        return response
+    except FileNotFoundError:
+        return HttpResponse(status=404)
+    except PermissionError:
+        return HttpResponse(status=403)

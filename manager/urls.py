@@ -16,4 +16,5 @@ urlpatterns = [
     url(r'^{name}/{number}/$'.format(**_REGEX), views.build_detail, name='build_detail'),
     url(r'^{name}/{number}/download/$'.format(**_REGEX), views.build_download, name='build_download'),
     url(r'^{name}/{number}/log/$'.format(**_REGEX), views.build_log, name='build_log'),
+    url(r'^repository/(?P<file_name>.*)$', views.repository, name='repository'),
 ]
