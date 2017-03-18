@@ -1,8 +1,6 @@
 import functools
-import json
 
-from django.http import HttpResponse
-from django.template import RequestContext, Template
+from django.http import HttpResponse, JsonResponse
 
 import lib.aur as aur
 import manager.operation as operation
@@ -29,9 +27,7 @@ def make_api(require=None, optional=None, error_check=False, status=400):
                 if key in params:
                     option_dict[key] = params[key]
             result = function(params, **option_dict)
-            c = RequestContext(request, {'result': json.dumps(result)})
-            t = Template('{{result | safe}}')
-            response = HttpResponse(t.render(c), content_type='application/json')
+            response = JsonResponse(result, safe=False)
             if error_check:
                 if not result['result']:
                     response.status_code = status
