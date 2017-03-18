@@ -1,11 +1,13 @@
 import json
 import os.path
-from typing import Union
+from datetime import datetime
+from typing import Union, Optional
 
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, FileResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import condition
 
 import packager.path
 from manager.models import Package, Build, Artifact
@@ -125,7 +127,27 @@ def build_download(request: HttpRequest, package_name: str, build_number: str) -
         return HttpResponse(status=404)
 
 
+_repository_condition_datetime_cache: Optional[datetime] = None
+
+
+def _repository_condition_func(request: HttpRequest, file_name: str) -> datetime:
+    global _repository_condition_datetime_cache
+    if not _repository_condition_datetime_cache:
+        path = os.path.join(CUSTOM_LOCAL_REPOSITORY_DIR, file_name)
+        _repository_condition_datetime_cache = datetime.utcfromtimestamp(os.path.getmtime(path))
+    return _repository_condition_datetime_cache
+
+
+def _repository_last_modified_func(request: HttpRequest, file_name: str) -> datetime:
+    return _repository_condition_func(request, file_name)
+
+
+def _repository_etag_func(request: HttpRequest, file_name: str) -> str:
+    return _repository_condition_func(request, file_name).isoformat()
+
+
 @ensure_csrf_cookie
+@condition(etag_func=_repository_etag_func, last_modified_func=_repository_last_modified_func)
 def repository(request: HttpRequest, file_name: str) -> Union[HttpResponse, FileResponse]:
     if not CUSTOM_LOCAL_REPOSITORY:
         return HttpResponse(status=404)
