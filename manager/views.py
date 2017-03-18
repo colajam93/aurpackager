@@ -1,8 +1,9 @@
 import json
 import os.path
+from typing import Union
 
 from django.forms.models import model_to_dict
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
 
@@ -73,30 +74,6 @@ def build_detail(request, package_name, build_number):
 
 
 @ensure_csrf_cookie
-def build_download(request, package_name, build_number):
-    artifact = Artifact.objects.get(name=package_name)
-    try:
-        build = Build.objects.filter(package_id=artifact.package.id).order_by('-id')[int(build_number) - 1]
-    except IndexError:
-        build = None
-    if build and build.status == Build.SUCCESS:
-        path = packager.path.build_to_path(build)
-        result_file = path.artifact_file(artifact.name)
-        try:
-            f = open(result_file, 'rb')
-            response = FileResponse(f, content_type='application/x-xz')
-            response['Content-Length'] = os.path.getsize(result_file)
-            response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(result_file))
-            return response
-        except FileNotFoundError:
-            return HttpResponse(status=404)
-        except PermissionError:
-            return HttpResponse(status=403)
-    else:
-        return HttpResponse(status=404)
-
-
-@ensure_csrf_cookie
 def build_log(request, package_name, build_number):
     try:
         build = Build.objects.filter(package__name=package_name).order_by('-id')[int(build_number) - 1]
@@ -116,18 +93,41 @@ def build_log(request, package_name, build_number):
         return HttpResponse(status=404)
 
 
-@ensure_csrf_cookie
-def repository(request, file_name: str):
-    if not CUSTOM_LOCAL_REPOSITORY:
-        return HttpResponse(status=404)
-    path = os.path.join(CUSTOM_LOCAL_REPOSITORY_DIR, file_name)
+def _package_response(path: str) -> Union[HttpResponse, FileResponse]:
+    """
+    :param path: full path to package file
+    :return: FileResponse or HttpResponse(error)
+    """
     try:
         f = open(path, 'rb')
         response = FileResponse(f, content_type='application/x-xz')
         response['Content-Length'] = os.path.getsize(path)
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(path))
         return response
     except FileNotFoundError:
         return HttpResponse(status=404)
     except PermissionError:
         return HttpResponse(status=403)
+
+
+@ensure_csrf_cookie
+def build_download(request: HttpRequest, package_name: str, build_number: str) -> Union[HttpResponse, FileResponse]:
+    artifact = Artifact.objects.get(name=package_name)
+    try:
+        build = Build.objects.filter(package_id=artifact.package.id).order_by('-id')[int(build_number) - 1]
+    except IndexError:
+        build = None
+    if build and build.status == Build.SUCCESS:
+        path = packager.path.build_to_path(build)
+        result_file = path.artifact_file(artifact.name)
+        return _package_response(result_file)
+    else:
+        return HttpResponse(status=404)
+
+
+@ensure_csrf_cookie
+def repository(request: HttpRequest, file_name: str) -> Union[HttpResponse, FileResponse]:
+    if not CUSTOM_LOCAL_REPOSITORY:
+        return HttpResponse(status=404)
+    path = os.path.join(CUSTOM_LOCAL_REPOSITORY_DIR, file_name)
+    return _package_response(path)
