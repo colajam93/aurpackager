@@ -1,7 +1,6 @@
 import json
 import os.path
 
-from django.core.files import File
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, FileResponse
 from django.shortcuts import render, redirect
@@ -83,12 +82,16 @@ def build_download(request, package_name, build_number):
     if build and build.status == Build.SUCCESS:
         path = packager.path.build_to_path(build)
         result_file = path.artifact_file(artifact.name)
-        with open(result_file, 'rb') as f:
-            ff = File(f)
-            response = HttpResponse(ff, content_type='application/x-xz')
+        try:
+            f = open(result_file, 'rb')
+            response = FileResponse(f, content_type='application/x-xz')
+            response['Content-Length'] = os.path.getsize(result_file)
             response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(result_file))
-            response['Content-Length'] = ff.size
             return response
+        except FileNotFoundError:
+            return HttpResponse(status=404)
+        except PermissionError:
+            return HttpResponse(status=403)
     else:
         return HttpResponse(status=404)
 
