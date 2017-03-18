@@ -8,8 +8,7 @@ from packager.path import build_to_path
 from packager.settings_local import CUSTOM_LOCAL_REPOSITORY_DIR
 
 DB_FILENAME = 'repo.db.tar.xz'
-DB_DIRECTORY_NAME = 'repo'
-DB_PATH = os.path.join(CUSTOM_LOCAL_REPOSITORY_DIR, DB_DIRECTORY_NAME)
+DB_PATH = CUSTOM_LOCAL_REPOSITORY_DIR
 DB_FILE = os.path.join(DB_PATH, DB_FILENAME)
 
 
