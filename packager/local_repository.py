@@ -5,9 +5,9 @@ import subprocess
 from manager.models import Package, Artifact, Build
 from manager.utilities import get_latest_build
 from packager.path import build_to_path
-from packager.settings_local import CUSTOM_LOCAL_REPOSITORY_DIR
+from packager.settings_local import CUSTOM_LOCAL_REPOSITORY_DIR, CUSTOM_LOCAL_REPOSITORY_NAME
 
-DB_FILENAME = 'repo.db.tar.xz'
+DB_FILENAME = '{}.db.tar.xz'.format(CUSTOM_LOCAL_REPOSITORY_NAME)
 DB_PATH = CUSTOM_LOCAL_REPOSITORY_DIR
 DB_FILE = os.path.join(DB_PATH, DB_FILENAME)
 
