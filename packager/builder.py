@@ -7,6 +7,7 @@ import lib.download as download
 import packager.path
 from manager.models import Package
 from packager.path import DEST_DIR_NAME
+from packager.settings_local import PACKAGER
 
 
 class BuilderError(Exception):
@@ -47,6 +48,7 @@ cd {build_dir}
 tar xvf {package_name}
 cd $(ls -d */ | grep -v "{dest_dir_name}")
 export PKGDEST='{dest}'
+export PACKAGER='{packager_name}'
 makepkg -s --noconfirm
 workdir=$(pwd)
 cd ..
@@ -57,7 +59,7 @@ fi
 '''
         with open(path.script_file, 'w') as f:
             f.write(build_script.format(build_dir=build_dir, package_name=self.package_name, dest=dest_dir,
-                                        dest_dir_name=DEST_DIR_NAME))
+                                        dest_dir_name=DEST_DIR_NAME, packager_name=PACKAGER))
 
         # execute build script
         completed = subprocess.run('cd {} && bash _build_script.sh'.format(build_dir), shell=True,

@@ -1,5 +1,6 @@
 # General
 BUILD_ROOT_DIR = '/tmp/aurpackager'
+PACKAGER = ''
 
 # Slack
 SLACK_NOTIFICATION = False
