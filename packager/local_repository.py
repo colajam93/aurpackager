@@ -12,7 +12,8 @@ DB_PATH = CUSTOM_LOCAL_REPOSITORY_DIR
 DB_FILE = os.path.join(DB_PATH, DB_FILENAME)
 
 
-def _run_repo_add(path: str) -> None:
+def _run_repo_add(path: str, artifact_name: str) -> None:
+    subprocess.run(['repo-remove', '-q', DB_FILE, artifact_name], stderr=subprocess.DEVNULL)
     subprocess.run(['repo-add', '-q', '-R', '-n', DB_FILE, path], stderr=subprocess.DEVNULL)
 
 
@@ -34,7 +35,7 @@ def _update_package(build: Build) -> None:
     path = build_to_path(build)
     for artifact in Artifact.objects.filter(package=build.package):
         copied_path = shutil.copy(path.artifact_file(artifact.name), DB_PATH)
-        _run_repo_add(copied_path)
+        _run_repo_add(copied_path, artifact.name)
 
 
 def update_repository(build: Build) -> None:
