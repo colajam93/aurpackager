@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 from contextlib import closing
 from urllib.request import urlopen
+from urllib.parse import quote
 
 from lib.download import save_to_file
 
@@ -45,7 +46,7 @@ class DetailAURInfo(AURInfo):
 
 
 def _aur_query(url):
-    with closing(urlopen(url)) as request:
+    with closing(urlopen(quote(url, safe='/?:&=[]'))) as request:
         result = json.loads(request.read().decode())
     return result
 
