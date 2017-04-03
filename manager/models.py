@@ -9,6 +9,8 @@ class Package(models.Model):
     """
     name = models.CharField(max_length=FIELD_LENGTH)
     ignore = models.BooleanField(default=False)
+    OFFICIAL = 'OFFICIAL'
+    server = models.CharField(max_length=FIELD_LENGTH, default=OFFICIAL)
 
     def __str__(self):
         return '{} ignore: {}'.format(self.name, self.ignore)
