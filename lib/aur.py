@@ -3,10 +3,14 @@ import os.path
 import subprocess
 import tempfile
 from contextlib import closing
-from urllib.request import urlopen
 from urllib.parse import quote
+from urllib.request import urlopen
+
+from typing import List
 
 from lib.download import save_to_file
+from manager.models import Package
+from packager.settings_local import UNOFFICIAL_AUR_SERVERS
 
 AUR_URL = 'https://aur.archlinux.org'
 BASE_URL = AUR_URL + '/rpc/?v=5&'
@@ -117,3 +121,9 @@ def exist(package):
         return False
     else:
         return True
+
+
+def servers() -> List[str]:
+    r = list(UNOFFICIAL_AUR_SERVERS.keys())
+    r.append(Package.OFFICIAL)
+    return r

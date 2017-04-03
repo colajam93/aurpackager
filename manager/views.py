@@ -1,15 +1,16 @@
 import json
 import os.path
 from datetime import datetime
-from typing import Union
 
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, FileResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import condition
+from typing import Union
 
 import packager.path
+from lib.aur import servers
 from manager.models import Package, Build, Artifact
 from packager.settings_local import CUSTOM_LOCAL_REPOSITORY_DIR, CUSTOM_LOCAL_REPOSITORY
 
@@ -43,7 +44,8 @@ def package_detail(request, package_name):
 
 @ensure_csrf_cookie
 def package_register(request):
-    return render(request, 'package_register.html', {'active': 'register'})
+    return render(request, 'package_register.html',
+                  {'active': 'register', 'servers': servers(), 'OFFICIAL': Package.OFFICIAL})
 
 
 @ensure_csrf_cookie
