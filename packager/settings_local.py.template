@@ -1,3 +1,7 @@
+from typing import Dict
+
+from packager.settings_util import AURServer
+
 # General
 BUILD_ROOT_DIR = '/tmp/aurpackager'
 PACKAGER = ''
@@ -11,3 +15,8 @@ AUR_PACKAGER_BASE_URL = ''  # REQUIRED FOR SLACK_NOTIFICATION
 CUSTOM_LOCAL_REPOSITORY = False
 CUSTOM_LOCAL_REPOSITORY_DIR = '/tmp/repo'
 CUSTOM_LOCAL_REPOSITORY_NAME = 'repo'
+
+# Unofficial AUR servers
+# e.g. {'SERVER1': AURServer(address='https://aur.foo.com', user='user', password='password'),
+#       'SERVER2': AURServer('https://aur.bar.com')}
+UNOFFICIAL_AUR_SERVERS: Dict[str, AURServer] = {}
