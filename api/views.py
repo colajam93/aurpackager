@@ -38,14 +38,14 @@ def make_api(require=None, optional=None, error_check=False, status=400):
     return decorator
 
 
-@make_api(require=['name'])
+@make_api(require=['name', 'server'])
 def package_search(params):
-    return aur.search(params['name'])
+    return aur.search(params['name'], params['server'])
 
 
-@make_api(require=['name'])
+@make_api(require=['name', 'server'])
 def package_info(params):
-    return aur.info(params['name'])
+    return aur.info(params['name'], params['server'])
 
 
 @make_api(require=['name'], optional=['depend'], error_check=True)
