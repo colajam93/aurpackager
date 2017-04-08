@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 from contextlib import closing
 from urllib.parse import quote
-from urllib.request import HTTPBasicAuthHandler, build_opener, HTTPPasswordMgrWithDefaultRealm
+from urllib.request import HTTPBasicAuthHandler, build_opener, HTTPPasswordMgrWithDefaultRealm, OpenerDirector
 
 from typing import List, Dict
 
@@ -44,6 +44,12 @@ def _query_search(package: str, aur_server_tag: str):
 
 # TODO: add type hint
 def _send_query(url: str, aur_server_tag: str):
+    opener = _create_opener(aur_server_tag)
+    with closing(opener.open(fullurl=url)) as request:
+        return json.loads(request.read().decode())
+
+
+def _create_opener(aur_server_tag: str) -> OpenerDirector:
     server = _aur_server(aur_server_tag)
     password_manager = HTTPPasswordMgrWithDefaultRealm()
     password_manager.add_password(realm=None,
@@ -51,9 +57,7 @@ def _send_query(url: str, aur_server_tag: str):
                                   user=server.user,
                                   passwd=server.password)
     handler = HTTPBasicAuthHandler(password_manager)
-    opener = build_opener(handler)
-    with closing(opener.open(fullurl=url)) as request:
-        return json.loads(request.read().decode())
+    return build_opener(handler)
 
 
 def package_url(aur_server_tag: str, package_name: str) -> str:
@@ -98,7 +102,8 @@ def detail_info(package: str, aur_server_tag: str) -> DetailAURInfo:
     info_ = info(package, aur_server_tag)
     with tempfile.TemporaryDirectory() as temp_dir:
         tar_path = os.path.join(temp_dir, 'tarball')
-        save_to_file(info_.tar_url, tar_path)
+        opener = _create_opener(aur_server_tag)
+        save_to_file(info_.tar_url, tar_path, opener=opener)
         tar_out = os.path.join(temp_dir, 'o')
         os.mkdir(tar_out)
         subprocess.run(['tar', 'xvf', tar_path, '-C', tar_out], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
