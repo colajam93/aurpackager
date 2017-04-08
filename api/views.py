@@ -12,8 +12,8 @@ def make_api(require=None, optional=None, error_check=False, status=400):
     if require is None:
         require = []
 
-    def decorator(function):
-        @functools.wraps(function)
+    def decorator(f):
+        @functools.wraps(f)
         def wrapper(request):
             if request.method == 'POST':
                 params = request.POST
@@ -26,7 +26,7 @@ def make_api(require=None, optional=None, error_check=False, status=400):
             for key in optional:
                 if key in params:
                     option_dict[key] = params[key]
-            result = function(params, **option_dict)
+            result = f(params, **option_dict)
             response = JsonResponse(result, safe=False)
             if error_check:
                 if not result['result']:
