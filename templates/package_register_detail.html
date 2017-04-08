@@ -118,15 +118,19 @@
             $.ajax({
                 type: 'POST',
                 url: "{% url 'api:package_register' %}",
-                data: {"name": "{{ package_name }}", "depend": document.getElementById('withDepend').checked},
+                data: {
+                    "name": "{{ package_name }}",
+                    "depend": document.getElementById('withDepend').checked,
+                    "server": "{{ server }}"
+                },
                 dataType: 'json'
-            }).then(function (result) {
-                var keys = [];
+            }).then((result) => {
+                const keys = [];
                 keys.push('native');
                 keys.push('foreign');
                 openModal(keys, result);
-            }).fail(function (e) {
-                var keys = [];
+            }).fail((e) => {
+                const keys = [];
                 keys.push('detail');
                 openModal(keys, JSON.parse(e.responseText));
             });
