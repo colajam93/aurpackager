@@ -1,9 +1,10 @@
 from django import template
-import lib.aur
+
+from lib.aur import package_url
 
 register = template.Library()
 
 
 @register.simple_tag
-def aur_package_url(name):
-    return lib.aur.aur_package_url(name)
+def aur_package_url(name: str, server: str) -> str:
+    return package_url(aur_server_tag=server, package_name=name)

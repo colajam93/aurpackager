@@ -32,7 +32,7 @@
                     onclick="openRemoveModal('{{ package.name }}')">
                 Remove
             </button>
-            <a href="{% aur_package_url package.name %}"
+            <a href="{% aur_package_url package.name package.server %}"
                class="btn btn-info">AUR</a>
         </div>
     </div>
