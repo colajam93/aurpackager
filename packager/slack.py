@@ -5,7 +5,7 @@ import urllib.request
 
 from django.core.urlresolvers import reverse_lazy
 
-from lib.aur import aur_package_url
+from lib.aur import package_url
 from manager.models import Build, Artifact
 from packager.settings import SLACK_NOTIFICATION_URL, AUR_PACKAGER_BASE_URL, SLACK_NOTIFICATION
 
@@ -16,7 +16,7 @@ def post(build: Build):
     detail_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_detail',
                                                           kwargs={'package_name': build.package.name,
                                                                   'build_number': 1}))
-    base = '<{}|{}> {}: <{}|{}>'.format(aur_package_url(build.package.name), build.package.name,
+    base = '<{}|{}> {}: <{}|{}>'.format(package_url(build.package.name, build.package.server), build.package.name,
                                         build.version, detail_url, build.status)
 
     if build.status == Build.SUCCESS:
