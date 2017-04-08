@@ -50,7 +50,8 @@ def package_register(request):
 
 @ensure_csrf_cookie
 def package_register_detail(request, package_name):
-    return render(request, 'package_register_detail.html', {'package_name': package_name, 'active': 'register'})
+    return render(request, 'package_register_detail.html',
+                  {'package_name': package_name, 'active': 'register', 'server': request.GET['server']})
 
 
 @ensure_csrf_cookie

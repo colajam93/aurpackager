@@ -42,7 +42,9 @@
             $.ajax({
                 type: 'POST',
                 url: "{% url 'api:package_info' %}",
-                data: {"name": name},
+                data: {
+                    "name": name, "server": "{{ server }}"
+                },
                 dataType: 'json'
             }).then(function (result) {
                 var table = document.createElement('table');
