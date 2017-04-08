@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 from contextlib import closing
 from urllib.parse import quote
-from urllib.request import urlopen
+from urllib.request import HTTPBasicAuthHandler, build_opener, HTTPPasswordMgrWithDefaultRealm
 
 from typing import List, Dict
 
@@ -17,22 +17,43 @@ _AUR_SERVERS: Dict[str, AURServer] = {Package.OFFICIAL: AURServer('https://aur.a
 _AUR_SERVERS.update(UNOFFICIAL_AUR_SERVERS)
 
 
-def _aur_url(aur_server_tag: str) -> str:
+def _aur_server(aur_server_tag: str) -> AURServer:
     # TODO: error report for unrecognized AUR server tag
-    server = _AUR_SERVERS.get(aur_server_tag, _AUR_SERVERS[Package.OFFICIAL])
-    return server.address
+    return _AUR_SERVERS.get(aur_server_tag, _AUR_SERVERS[Package.OFFICIAL])
+
+
+def _aur_url(aur_server_tag: str) -> str:
+    return _aur_server(aur_server_tag).address
 
 
 def _base_url(aur_server_tag: str) -> str:
     return _aur_url(aur_server_tag) + '/rpc/?v=5&'
 
 
-def _info_url(aur_server_tag: str) -> str:
-    return _base_url(aur_server_tag) + 'type=info&'
+# TODO: add type hint
+def _query_info(packages: List[str], aur_server_tag: str):
+    url = _base_url(aur_server_tag) + 'type=info&' + '&'.join(['arg[]={}'.format(quote(x)) for x in packages])
+    return _send_query(url, aur_server_tag)
 
 
-def _search_url(aur_server_tag: str) -> str:
-    return _base_url(aur_server_tag) + 'type=search&'
+# TODO: add type hint
+def _query_search(package: str, aur_server_tag: str):
+    url = _base_url(aur_server_tag) + 'type=search&' + 'arg={}'.format(quote(package))
+    return _send_query(url, aur_server_tag)
+
+
+# TODO: add type hint
+def _send_query(url: str, aur_server_tag: str):
+    server = _aur_server(aur_server_tag)
+    password_manager = HTTPPasswordMgrWithDefaultRealm()
+    password_manager.add_password(realm=None,
+                                  uri=server.address,
+                                  user=server.user,
+                                  passwd=server.password)
+    handler = HTTPBasicAuthHandler(password_manager)
+    opener = build_opener(handler)
+    with closing(opener.open(fullurl=url)) as request:
+        return json.loads(request.read().decode())
 
 
 def package_url(aur_server_tag: str, package_name: str) -> str:
@@ -66,15 +87,8 @@ class DetailAURInfo(AURInfo):
         self.pkgnames = pkgnames
 
 
-# TODO: add type hint(maybe complex)
-def _aur_query(url: str):
-    with closing(urlopen(quote(url, safe='/?:&=[]'))) as request:
-        return json.loads(request.read().decode())
-
-
 def info(package: str, aur_server_tag: str) -> AURInfo:
-    url = _info_url(aur_server_tag) + 'arg[]={}'.format(package)
-    result = _aur_query(url)
+    result = _query_info([package], aur_server_tag)
     if result['resultcount'] == 0:
         raise PackageNotFoundError
     return AURInfo(result['results'][0], aur_server_tag)
@@ -110,8 +124,7 @@ def detail_info(package: str, aur_server_tag: str) -> DetailAURInfo:
 
 
 def multiple_info(packages: List[str], aur_server_tag: str) -> Dict[str, AURInfo]:
-    url = _info_url(aur_server_tag) + '&'.join(map(lambda x: 'arg[]={}'.format(x), packages))
-    result = _aur_query(url)
+    result = _query_info(packages, aur_server_tag)
 
     # dict which key is the package name
     ret = dict()
@@ -126,8 +139,7 @@ def multiple_info(packages: List[str], aur_server_tag: str) -> Dict[str, AURInfo
 
 
 def search(package: str, aur_server_tag: str) -> List[AURInfo]:
-    url = _search_url(aur_server_tag) + 'arg={}'.format(package)
-    result = _aur_query(url)
+    result = _query_search(package, aur_server_tag)
     return [AURInfo(x, aur_server_tag) for x in result['results']]
 
 
