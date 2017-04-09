@@ -18,6 +18,7 @@
                 <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Server</th>
                     <th>Build Status</th>
                     <th>Ignore</th>
                     <th>Operation</th>
@@ -28,6 +29,7 @@
                     <tr data-href="{% url 'manager:package_detail' package_name=package.name %}"
                         class="clickable-pointer">
                         <td>{{ package.name }}</td>
+                        <td>{{ package.server }}</td>
                         <td>{{ package.status }}</td>
                         <td>{{ package.ignore }}</td>
                         <td>
