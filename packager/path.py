@@ -28,8 +28,8 @@ class Path:
         if len(fns) == 1:  # success to find unique pkg
             return os.path.join(self.dest_dir, fns[0])
         else:  # there are multiple candidates for path
-            artifact_names = map(lambda x: x.name, Artifact.objects.filter(package__name=self.name).exclude(
-                name=name))  # get artifact names exclude required one
+            # get artifact names exclude required one
+            artifact_names = [x.name for x in Artifact.objects.filter(package__name=self.name).exclude(name=name)]
             for an in artifact_names:  # exclude not required names from candidates
                 fns = [f for f in fns if not f.startswith(an)]
             if len(fns) == 1:
