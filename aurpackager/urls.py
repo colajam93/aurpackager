@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from django.contrib import admin
+
 from aurpackager.settings import URL_PREFIX
 
 
@@ -26,7 +26,6 @@ def _application_directory():
 
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
     url(r'^{}api/'.format(_application_directory()), include('api.urls', namespace='api')),
     url(r'^{}'.format(_application_directory()), include('manager.urls', namespace='manager'))
 ]
