@@ -156,7 +156,8 @@ def build_all():
 def build_update():
     packages = Package.objects.all()
     sync.system_upgrade()
-    need_check = list()
+    # dict of server tag to list of Build
+    need_check: Dict[str, List[Build]] = {}
     for package in packages:
         if package.ignore:
             continue
@@ -168,13 +169,17 @@ def build_update():
             if latest.status == Build.FAILURE:
                 BuilderManager().register(package.id)
             elif latest.status == Build.SUCCESS:
-                need_check.append(latest)
+                if latest.package.server in need_check:
+                    need_check[latest.package.server].append(latest)
+                else:
+                    need_check[latest.package.server] = [latest]
     if need_check:
-        infos = aur.multiple_info(list(map(lambda x: x.package.name, need_check)))
-        for p in need_check:
-            package_name = p.package.name
-            if infos[package_name] and infos[package_name].Version != p.version:
-                BuilderManager().register(p.package.id)
+        for k, v in need_check.items():
+            multiple_info_ = aur.multiple_info([x.package.name for x in v], k)
+            for p in v:
+                package_name = p.package.name
+                if multiple_info_[package_name] and multiple_info_[package_name].Version != p.version:
+                    BuilderManager().register(p.package.id)
 
 
 def install(name):
