@@ -2,6 +2,7 @@ import enum
 import itertools
 import os.path
 import shutil
+
 from typing import Dict, List
 
 import lib.aur as aur
@@ -44,14 +45,14 @@ def _register_status(name: str) -> (RegisterStatus, str):
 
 
 # TODO: Refactor too naive implementation
-def register(name: str, with_depend: bool = False) -> Dict[str, List[str]]:
+def register(name: str, server: str, with_depend: bool = False) -> Dict[str, List[str]]:
     (is_registered, registered_name) = _register_status(name)
     if is_registered == RegisterStatus.package:
         raise OperationError('{} has already registered'.format(name))
     elif is_registered == RegisterStatus.artifact:
         raise OperationError('{} has already registered as Artifact of {}'.format(name, registered_name))
 
-    info = aur.detail_info(name)
+    info = aur.detail_info(name, server)
     native = []
     foreign = []
     if with_depend:
@@ -64,7 +65,7 @@ def register(name: str, with_depend: bool = False) -> Dict[str, List[str]]:
             depend_name = depend.translate(str.maketrans('>=', '<<')).split('<')[0]
             if sync.exist(depend_name):
                 native.append(depend_name)
-            elif aur.exist(depend_name):
+            elif aur.exist(depend_name, Package.OFFICIAL):
                 foreign.append(depend_name)
             else:
                 raise OperationError('{} not found'.format(depend_name))
@@ -72,7 +73,8 @@ def register(name: str, with_depend: bool = False) -> Dict[str, List[str]]:
         sync.install(native, asdeps=True)
         for package in foreign:
             if not _is_registered(package):
-                r = register(package, with_depend=True)
+                # Dependent package will register from official server
+                r = register(package, Package.OFFICIAL, with_depend=True)
                 native.extend(r['native'])
                 foreign.extend(r['foreign'])
 
@@ -80,7 +82,7 @@ def register(name: str, with_depend: bool = False) -> Dict[str, List[str]]:
         d = Package.objects.filter(name=duplicate)
         if d.exists():
             d.delete()
-    package = Package(name=name)
+    package = Package(name=name, server=server)
     package.save()
     for pkgname in info.pkgnames:
         artifact = Artifact(package=package, name=pkgname)

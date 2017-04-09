@@ -48,12 +48,12 @@ def package_info(params):
     return aur.info(params['name'], params['server'])
 
 
-@make_api(require=['name'], optional=['depend'], error_check=True)
+@make_api(require=['name', 'server'], optional=['depend'], error_check=True)
 def package_register(params, **kwargs):
     with_depend = kwargs['depend'] == 'true'
     ret = dict()
     try:
-        r = operation.register(params['name'], with_depend=with_depend)
+        r = operation.register(params['name'], params['server'], with_depend=with_depend)
     except operation.OperationError as e:
         ret['result'] = False
         ret['detail'] = str(e)
