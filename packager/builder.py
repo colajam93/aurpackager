@@ -25,7 +25,7 @@ class Builder:
 
     def build(self, date):
         # get package info from AUR
-        info = aur.info(self.package_name)
+        info = aur.info(self.package_name, self.package.server)
 
         # create required path
         self.version = info.Version
@@ -38,7 +38,7 @@ class Builder:
         os.makedirs(dest_dir, 0o700)
 
         # get tarball
-        download.save_to_file(info.tar_url, path.tar_file)
+        download.save_to_file(info.tar_url, path.tar_file, opener=aur.create_opener(self.package.server))
 
         # generate build script
         build_script = '''
