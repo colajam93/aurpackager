@@ -2,8 +2,8 @@ from django.conf.urls import url
 
 from manager import views
 
-_PACKAGE_NAME_REGEX = r'(?P<package_name>[a-zA-Z0-9_+-]+)'
-_PACKAGE_NAME_REGEX_WITH_EMPTY = r'(?P<package_name>[a-zA-Z0-9_+-]*)'
+_PACKAGE_NAME_REGEX = r'(?P<package_name>[a-zA-Z0-9_+-.]+)'
+_PACKAGE_NAME_REGEX_WITH_EMPTY = r'(?P<package_name>[a-zA-Z0-9_+-.]*)'
 _BUILD_NUMBER_REGEX = r'(?P<build_number>\d+)'
 _REGEX = {'name': _PACKAGE_NAME_REGEX, 'number': _BUILD_NUMBER_REGEX}
 
