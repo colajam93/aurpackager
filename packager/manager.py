@@ -56,7 +56,7 @@ class BuilderManager(metaclass=Singleton):
             build.save()
             if SLACK_NOTIFICATION:
                 packager.slack.post(build)
-            if CUSTOM_LOCAL_REPOSITORY:
+            if CUSTOM_LOCAL_REPOSITORY and build.status == build.SUCCESS:
                 packager.local_repository.update_repository(build)
 
             with self.lock:
