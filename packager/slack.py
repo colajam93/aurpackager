@@ -16,8 +16,9 @@ def post(build: Build):
     detail_url = AUR_PACKAGER_BASE_URL + str(reverse_lazy('manager:build_detail',
                                                           kwargs={'package_name': build.package.name,
                                                                   'build_number': 1}))
-    base = '<{}|{}> {}: <{}|{}>'.format(package_url(build.package.name, build.package.server), build.package.name,
-                                        build.version, detail_url, build.status)
+    base = '<{}|{}> {}: <{}|{}>'.format(
+        package_url(aur_server_tag=build.package.server, package_name=build.package.name), build.package.name,
+        build.version, detail_url, build.status)
 
     if build.status == Build.SUCCESS:
         emoji = ':+1:'
